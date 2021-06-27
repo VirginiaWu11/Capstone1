@@ -1,0 +1,20 @@
+.navbar-brand {
+  font-family: "Leckerli One", cursive;
+}
+.home-loggedout {
+  background-image: url("https://images.unsplash.com/photo-1479150928156-423a69d91fe0?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80}");
+  background-size: cover;
+  background-position: center center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  left: 0;
+  z-index: -1;
+  text-shadow: 0px 0px 100px black;
+  color: white;
+}
