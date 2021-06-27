@@ -60,12 +60,12 @@ class Food(db.Model):
         default=datetime.utcnow().date(),
     )
     calories = db.Column(
-        db.Interger,
+        db.Integer,
         nullable=False
     )
 
 class Plan(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'plans'
 
     id = db.Column(
         db.Integer,
@@ -77,7 +77,7 @@ class Plan(db.Model):
 
 
 class BMI(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'bmi'
 
     id = db.Column(
         db.Integer,
