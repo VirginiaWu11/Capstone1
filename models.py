@@ -1,4 +1,5 @@
 from datetime import datetime
+from bisect import bisect_right
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
@@ -143,8 +144,25 @@ class BMI(db.Model):
 
     @classmethod
     def cal_height_inches(cls,height): #height is a string 5'4
+        """Convert height from String to Number in Inches"""
         return int(height[0:height.index("'")])*12+int(height[height.index("'")+1])
 
     @classmethod
     def calculate_BMI(cls, height, weight): #height is in inches now
+        """Use BMI formula to calculate BMI"""
         return round(703*weight/((height)**2),2)
+
+    @classmethod
+    def BMI_range(cls, bmi): 
+        categories = [
+            (16,"Severe Thinness"),
+            (17,"Moderate Thinness"),
+            (18,"Mild Thinness"),
+            (25,"Normal"),
+            (30,"Overweight"),
+            (35,"Obese Class I"),
+            (40,"Obese Class II"),
+            (100,"Obese Class III"),
+        ]
+        pos=bisect_right(categories,(bmi,))
+        return categories[pos][1]

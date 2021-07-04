@@ -1,6 +1,7 @@
 import os
 
 from functools import wraps
+from secrets import API_SECRET_KEY
 
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
@@ -125,9 +126,10 @@ def bmiForm():
         height = BMI.cal_height_inches(form.height.data)
         weight = form.weight.data
         bmi =  BMI.calculate_BMI(height,weight)
+        bmi_cat = BMI.BMI_range(bmi)
         # print('***************************',height,form.weight.data,bmi)
         # import pdb
-        # pdb.set_trace()
+        # pdb.set_trace() 
         if g.user:
             user = g.user
             user.bmi.bmi = bmi
@@ -135,8 +137,8 @@ def bmiForm():
             add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
             db.session.add_all([user,add_bmi])
             db.session.commit()
-            return render_template('users/bmi.html', form=form,bmi=bmi)
-        return render_template('users/bmi.html', form=form,bmi=bmi)
+            return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat)
+        return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat)
 
 
     return render_template('users/bmi.html', form=form)

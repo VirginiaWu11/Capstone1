@@ -16,7 +16,9 @@
           <button class="btn btn-primary">Add</button>
         </div>
       </form>
-      <p>{% if bmi %}Your BMI is {{bmi}} {% endif %}</p>
+      <p>
+        {% if bmi %}Your BMI is {{bmi}}, in the {{bmi_cat}} range{% endif %}
+      </p>
     </div>
   </div>
 </div>
