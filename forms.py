@@ -19,7 +19,6 @@ class UserEditForm(FlaskForm):
     password = PasswordField('Password', validators=[Length(min=6)])
     image_url = StringField('(Optional) Image URL')
     height = StringField('(Optional) Height')
-    password = PasswordField('Password', validators=[Length(min=6)])
 
 
 class LoginForm(FlaskForm):
@@ -27,3 +26,12 @@ class LoginForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
+
+
+class BMIForm(FlaskForm):
+    """Login form."""
+
+    height = StringField("Height (feet'inches e.g. 5'4)", validators=[DataRequired()])
+    weight = IntegerField('Weight (lbs)', validators=[DataRequired()])
+
+    

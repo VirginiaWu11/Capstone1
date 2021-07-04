@@ -6,9 +6,9 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, User
+from models import db, connect_db, User, BMI
 
-from forms import UserAddForm, UserEditForm, LoginForm
+from forms import UserAddForm, UserEditForm, LoginForm, BMIForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -60,6 +60,9 @@ def homepage():
         return render_template('home-loggedin.html')
     return render_template('home.html')
 
+
+###### signup/login/logout
+
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
     if CURR_USER_KEY in session:
@@ -110,3 +113,30 @@ def login():
         flash("Invalid credentials.", 'danger')
 
     return render_template('users/login.html', form=form)
+
+
+###### bmi
+
+@app.route('/bmi',methods=['GET','POST'])
+def bmiForm():
+    form = BMIForm()
+
+    if form.validate_on_submit():
+        height = BMI.cal_height_inches(form.height.data)
+        weight = form.weight.data
+        bmi =  BMI.calculate_BMI(height,weight)
+        # print('***************************',height,form.weight.data,bmi)
+        # import pdb
+        # pdb.set_trace()
+        if g.user:
+            user = g.user
+            user.bmi.bmi = bmi
+            user.height = height
+            add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
+            db.session.add_all([user,add_bmi])
+            db.session.commit()
+            return render_template('users/bmi.html', form=form,bmi=bmi)
+        return render_template('users/bmi.html', form=form,bmi=bmi)
+
+
+    return render_template('users/bmi.html', form=form)

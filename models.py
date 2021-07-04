@@ -39,6 +39,9 @@ class User(db.Model):
         db.Text,
         nullable = True
     )
+
+    bmi = db.relationship('BMI', backref='users')
+    
     @classmethod
     def signup(cls, username, password, image_url):
         """Sign up user.
@@ -117,7 +120,7 @@ class BMI(db.Model):
     )
 
     bmi = db.Column(
-        db.Integer,
+        db.Float,
         nullable=False,
     )
     # in pounds
@@ -126,8 +129,22 @@ class BMI(db.Model):
         nullable=False,
     )
     date = db.Column(
-        db.DateTime,
+        db.Date,
         nullable=False,
         default=datetime.utcnow().date(),
     )
 
+    user_id = db.Column(
+        db.Integer, 
+        db.ForeignKey("users.id"),
+        nullable = False
+    )
+    # users = db.relationship('User', backref='bmi')
+
+    @classmethod
+    def cal_height_inches(cls,height): #height is a string 5'4
+        return int(height[0:height.index("'")])*12+int(height[height.index("'")+1])
+
+    @classmethod
+    def calculate_BMI(cls, height, weight): #height is in inches now
+        return round(703*weight/((height)**2),2)
