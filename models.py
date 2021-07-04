@@ -40,8 +40,13 @@ class User(db.Model):
         db.Text,
         nullable = True
     )
+    diet_plan = db.Column(
+        db.Text,
+        nullable = True
+    )
 
     bmi = db.relationship('BMI', backref='users')
+    
     
     @classmethod
     def signup(cls, username, password, image_url):
@@ -99,16 +104,7 @@ class Food(db.Model):
         nullable=False
     )
 
-class Plan(db.Model):
-    __tablename__ = 'plans'
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-        autoincrement=True
-    )
-    difficulty = db.Column(db.Text,nullable=False,
-    )
 
 
 class BMI(db.Model):
@@ -140,7 +136,6 @@ class BMI(db.Model):
         db.ForeignKey("users.id"),
         nullable = False
     )
-    # users = db.relationship('User', backref='bmi')
 
     @classmethod
     def cal_height_inches(cls,height): #height is a string 5'4
@@ -166,3 +161,11 @@ class BMI(db.Model):
         ]
         pos=bisect_right(categories,(bmi,))
         return categories[pos][1]
+    @classmethod
+    def lbs_away(cls, bmi, height, weight): 
+        if(bmi <=18.01):
+            goal_weight = int(18.01*((height)**2)/703)
+            return goal_weight-weight
+        if(bmi > 25):
+            goal_weight = int(25*((height)**2)/703)
+            return weight-goal_weight

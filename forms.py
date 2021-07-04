@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, IntegerField
+from wtforms.fields.core import SelectField
 from wtforms.validators import DataRequired, Length
 
 
@@ -34,4 +35,8 @@ class BMIForm(FlaskForm):
     height = StringField("Height (feet'inches e.g. 5'4)", validators=[DataRequired()])
     weight = IntegerField('Weight (lbs)', validators=[DataRequired()])
 
+class planForm(FlaskForm):
+    """Login form."""
+
+    plan = SelectField('Diet Plan')
     

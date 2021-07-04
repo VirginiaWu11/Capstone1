@@ -1,5 +1,5 @@
 from app import db
-from models import User, Food, Plan,BMI
+from models import User, Food,BMI
 
 
 db.drop_all()

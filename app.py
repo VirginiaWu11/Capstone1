@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, BMI
 
-from forms import UserAddForm, UserEditForm, LoginForm, BMIForm
+from forms import UserAddForm, UserEditForm, LoginForm, BMIForm, planForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -34,6 +34,15 @@ def login_required(func):
             return redirect("/")
         return func(*args,**kwargs)
     return wrapper
+
+plans = {
+    'Lose .5lb per week': -250,
+    'Lose 1lb per week': -500,
+    'Lose 1.5lbs per week': -750,
+    'Gain .5lb per week': 250,
+    'Gain 1lb per week': 500,
+    'Gain 1.5lbs per week': 750,
+}
 
 def keep_login(user):
     """Add user to session."""
@@ -121,24 +130,49 @@ def login():
 @app.route('/bmi',methods=['GET','POST'])
 def bmiForm():
     form = BMIForm()
-
+    plan_form= planForm()
+    plan_choices = [(plan,plan) for plan in plans]
+    plan_form.plan.choices=plan_choices
     if form.validate_on_submit():
         height = BMI.cal_height_inches(form.height.data)
         weight = form.weight.data
         bmi =  BMI.calculate_BMI(height,weight)
         bmi_cat = BMI.BMI_range(bmi)
-        # print('***************************',height,form.weight.data,bmi)
-        # import pdb
-        # pdb.set_trace() 
-        if g.user:
+        lbs_away = BMI.lbs_away(bmi,height,weight)
+
+        if g.user:            
             user = g.user
             user.bmi.bmi = bmi
             user.height = height
             add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
             db.session.add_all([user,add_bmi])
             db.session.commit()
-            return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat)
-        return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat)
+            return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat,lbs_away=lbs_away,plan_form=plan_form)
 
+
+        return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat,lbs_away=lbs_away)
+
+    if plan_form.validate_on_submit():
+        user = g.user
+        user.diet_plan=plan_form.plan.data
+        db.session.add(user)
+        db.session.commit()
+        flash('Plan successfully added/updated','success')
+        return redirect('/')
 
     return render_template('users/bmi.html', form=form)
+
+
+@app.route('/plan',methods=['GET','POST'])
+def handle_plan():
+    form= planForm()
+    plan_choices = [(plan,plan) for plan in plans]
+    form.plan.choices=plan_choices
+    if form.validate_on_submit():
+        user = g.user
+        user.diet_plan=form.plan.data
+        db.session.add(user)
+        db.session.commit()
+        flash('plan successfully added/updated')
+        return redirect('/')
+    return render_template('users/plan.html', form=form)
