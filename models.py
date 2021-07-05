@@ -1,6 +1,8 @@
 from datetime import datetime
 from bisect import bisect_right
 
+from sqlalchemy.orm import backref
+
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
@@ -46,7 +48,7 @@ class User(db.Model):
     )
 
     bmi = db.relationship('BMI', backref='users')
-    
+    user_food = db.relationship('UserFood', backref='users')
     
     @classmethod
     def signup(cls, username, password, image_url):
@@ -80,14 +82,20 @@ class User(db.Model):
 
         return False
 
-class Food(db.Model):
+class UserFood(db.Model):
 
-    __tablename__ = 'food'
+    __tablename__ = 'user_food'
 
-    spoon_id = db.Column(
+    id = db.Column(
         db.Integer,
         primary_key=True,
     )
+
+    spoon_id = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id', ondelete='CASCADE'),
@@ -99,6 +107,10 @@ class Food(db.Model):
         nullable=False,
         default=datetime.utcnow().date(),
     )
+    name = db.Column(
+        db.Text,
+        nullable=False
+    )
     calories = db.Column(
         db.Integer,
         nullable=False
@@ -108,6 +120,87 @@ class Food(db.Model):
         default="/static/images/w-logo.png"
     )
 
+class UserIngredients(db.Model):
+
+    __tablename__ = 'user_ingredients'
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
+
+    spoon_id = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='CASCADE'),
+        nullable=False,
+    )
+
+    date = db.Column(
+        db.Date,
+        nullable=False,
+        default=datetime.utcnow().date(),
+    )
+    name = db.Column(
+        db.Text,
+        nullable=False
+    )
+    calories = db.Column(
+        db.Integer,
+        nullable=False
+    )
+    img = db.Column(
+        db.Text,
+        default="/static/images/w-logo.png"
+    )
+
+class Food(db.Model):
+
+    __tablename__ = 'food'
+
+    spoon_id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+    
+    name = db.Column(
+        db.Text,
+        nullable=False
+    )
+    calories = db.Column(
+        db.Integer,
+        nullable=False
+    )
+    img = db.Column(
+        db.Text,
+        default="/static/images/w-logo.png"
+    )
+
+class Ingredients(db.Model):
+
+    __tablename__ = 'ingredients'
+
+    spoon_id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
+
+    name = db.Column(
+        db.Text,
+        nullable=False
+    )
+    calories = db.Column(
+        db.Integer,
+        nullable=False
+    )
+    img = db.Column(
+        db.Text,
+        default="/static/images/w-logo.png"
+    )
 
 
 
