@@ -36,12 +36,12 @@ def login_required(func):
     return wrapper
 
 plans = {
-    'Lose .5lb per week': -250,
-    'Lose 1lb per week': -500,
-    'Lose 1.5lbs per week': -750,
-    'Gain .5lb per week': 250,
-    'Gain 1lb per week': 500,
-    'Gain 1.5lbs per week': 750,
+    'Lose .5lb per week; 250 calories deficit': -250,
+    'Lose 1lb per week; 500 calories deficit': -500,
+    'Lose 1.5lbs per week; 750 calories deficit': -750,
+    'Gain .5lb per week; 250 calories surplus': 250,
+    'Gain 1lb per week; 500 calories surplus': 500,
+    'Gain 1.5lbs per week; 750 calories surplus': 750,
 }
 
 def keep_login(user):
@@ -158,13 +158,15 @@ def bmiForm():
         db.session.add(user)
         db.session.commit()
         flash('Plan successfully added/updated','success')
-        return redirect('/')
+        return redirect('/plan')
 
     return render_template('users/bmi.html', form=form)
 
 
 @app.route('/plan',methods=['GET','POST'])
+@login_required
 def handle_plan():
+
     form= planForm()
     plan_choices = [(plan,plan) for plan in plans]
     form.plan.choices=plan_choices

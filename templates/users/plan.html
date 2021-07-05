@@ -1,6 +1,7 @@
 {% extends 'base.html' %} {% block content %}
 <div class="home-loggedout">
   <h1 class="text-center">Current Plan</h1>
+  <h2>{{g.user.diet_plan}}</h2>
   <div class="row justify-content-center">
     <div>
       <form method="POST">

@@ -20,6 +20,7 @@ class UserEditForm(FlaskForm):
     password = PasswordField('Password', validators=[Length(min=6)])
     image_url = StringField('(Optional) Image URL')
     height = StringField('(Optional) Height')
+    plan = SelectField('Diet Plan')
 
 
 class LoginForm(FlaskForm):
