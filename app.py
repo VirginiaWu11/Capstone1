@@ -1,4 +1,6 @@
 import os
+import requests
+import json
 
 from functools import wraps
 from secrets import API_SECRET_KEY
@@ -9,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 
 from models import db, connect_db, User, BMI
 
-from forms import UserAddForm, UserEditForm, LoginForm, BMIForm, planForm
+from forms import FoodIntakeForm, UserAddForm, UserEditForm, LoginForm, BMIForm, PlanForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -130,7 +132,7 @@ def login():
 @app.route('/bmi',methods=['GET','POST'])
 def bmiForm():
     form = BMIForm()
-    plan_form= planForm()
+    plan_form= PlanForm()
     plan_choices = [(plan,plan) for plan in plans]
     plan_form.plan.choices=plan_choices
     if form.validate_on_submit():
@@ -167,7 +169,7 @@ def bmiForm():
 @login_required
 def handle_plan():
 
-    form= planForm()
+    form= PlanForm()
     plan_choices = [(plan,plan) for plan in plans]
     form.plan.choices=plan_choices
     if form.validate_on_submit():
@@ -178,3 +180,24 @@ def handle_plan():
         flash('plan successfully added/updated')
         return redirect('/')
     return render_template('users/plan.html', form=form)
+
+@app.route('/food-intake',methods=['GET','POST'])
+@login_required
+def add_food():
+    form = FoodIntakeForm()
+    if form.validate_on_submit():
+        search = form.search.data
+        resp = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":3,"apiKey":API_SECRET_KEY})
+        data = resp.json()
+        
+        return render_template('users/food-intake.html', form=form, data=data)
+    return render_template('users/food-intake.html', form=form)
+
+
+@app.route('/recipes/<int:food_id>',methods=['GET'])
+def show_recipe(food_id):
+    resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/card',params={"apiKey":API_SECRET_KEY})
+    data = resp.json()
+    # import pdb;pdb.set_trace()
+    url=data['url']
+    return render_template("recipe-card.html",url=url)

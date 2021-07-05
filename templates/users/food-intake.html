@@ -1,0 +1,46 @@
+{% extends 'base.html' %} {% block content %}
+<div>
+  <h1 class="text-center">What did you eat today?!</h1>
+  <div class="row justify-content-center">
+    <div>
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          {% for field in form if field.widget.input_type != 'hidden'%}
+          <p>
+            {{field.label(class_="form-label")}}
+            {{field(class_="form-control")}} {% for err in field.errors %}
+            {{err}} {% endfor %}
+          </p>
+          {% endfor %}
+          <button class="btn btn-primary">Search</button>
+        </div>
+      </form>
+      {% if data %} {% for food in data["results"]%}
+      <div class="card mb-3" style="max-width: 540px">
+        <div class="row no-gutters">
+          <div class="col-md-4">
+            <img src="{{food.image}}" class="card-img" alt="{{food.title}}" />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{food.title}}</h5>
+              <p class="card-text">
+                {{food.nutrition.nutrients[0].amount|int}} calories
+              </p>
+              <p class="card-text">
+                <a href="#" class="btn btn-primary">Add</a>
+                <a href="/recipes/{{food.id}}" class="btn btn-primary"
+                  >View Recipe</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %} {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

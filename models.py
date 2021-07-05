@@ -95,13 +95,17 @@ class Food(db.Model):
     )
 
     date = db.Column(
-        db.DateTime,
+        db.Date,
         nullable=False,
         default=datetime.utcnow().date(),
     )
     calories = db.Column(
         db.Integer,
         nullable=False
+    )
+    img = db.Column(
+        db.Text,
+        default="/static/images/w-logo.png"
     )
 
 

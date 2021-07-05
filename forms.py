@@ -31,13 +31,18 @@ class LoginForm(FlaskForm):
 
 
 class BMIForm(FlaskForm):
-    """Login form."""
+    """BMI form."""
 
     height = StringField("Height (feet'inches e.g. 5'4)", validators=[DataRequired()])
     weight = IntegerField('Weight (lbs)', validators=[DataRequired()])
 
-class planForm(FlaskForm):
-    """Login form."""
+class PlanForm(FlaskForm):
+    """Diet Plan form."""
 
     plan = SelectField('Diet Plan')
+
+class FoodIntakeForm(FlaskForm):
+    """Food Intake form."""
+
+    search = StringField('Search',validators=[DataRequired()])
     
