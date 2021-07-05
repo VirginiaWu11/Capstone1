@@ -29,16 +29,28 @@
                 {{food.nutrition.nutrients[0].amount|int}} calories
               </p>
               <p class="card-text">
-                <a href="#" class="btn btn-primary">Add</a>
+                {%if food != data["results"][0]%}
+                <a href="/food/eat/{{food.id}}" class="btn btn-primary">Add</a>
                 <a href="/recipes/{{food.id}}" class="btn btn-primary"
                   >View Recipe</a
                 >
+                {% else %}
+                <a href="/food/ing/{{food.id}}" class="btn btn-primary">Add</a>
+                {% endif %}
               </p>
             </div>
           </div>
         </div>
       </div>
-      {% endfor %} {% endif %}
+
+      {% endfor %}{% else %}
+
+      <div>
+        <h2 class="text-muted">
+          Search recipies to be added to today's food intake
+        </h2>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>

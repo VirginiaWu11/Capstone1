@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, User, BMI
+from models import db, connect_db, User, BMI, Food, Ingredients
 
 from forms import FoodIntakeForm, UserAddForm, UserEditForm, LoginForm, BMIForm, PlanForm
 
@@ -187,8 +187,65 @@ def add_food():
     form = FoodIntakeForm()
     if form.validate_on_submit():
         search = form.search.data
-        resp = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":3,"apiKey":API_SECRET_KEY})
-        data = resp.json()
+        resp = requests.get('https://api.spoonacular.com/food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
+       
+        data=resp.json()
+        food_id= data['results'][0]['id']
+        name=data['results'][0]['name']
+        
+
+        imge = data['results'][0]['image']
+        img_url= "https://spoonacular.com/cdn/ingredients_100x100/"+imge
+        
+
+        
+        
+        data['results'][0]['image'] = img_url
+        data['results'][0]['title']=data['results'][0]['name']
+
+        cal_resp = requests.get(f'https://api.spoonacular.com/food/ingredients/{food_id}/information',params={"amount": 1,"apiKey":API_SECRET_KEY})
+        content = cal_resp.json()
+        for obj in content["nutrition"]["nutrients"]:
+            if obj["title"]=="Calories":
+                content["nutrition"]["nutrients"][0]=obj
+
+        data['results'][0]["nutrition"]=content["nutrition"]
+
+        calories=data['results'][0]["nutrition"]["nutrients"][0]["amount"]
+        ing1 = Ingredients(spoon_id=food_id,name=name,calories=calories,img=img_url)
+
+        if(bool(Ingredients.query.filter_by(spoon_id=food_id).first())):
+            ing = Ingredients.query.get_or_404(food_id)
+            ing.name=name
+            ing.calories=calories
+            ing.img=img_url
+            db.session.add(ing)
+        else:
+            db.session.add(ing1)
+        db.session.commit()
+
+
+        resp2 = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":3,"apiKey":API_SECRET_KEY})
+        data2 = resp2.json() 
+
+        for food1 in data2['results']:
+            spoon_id=food1["id"]
+            name = food1["title"]
+            img = food1["image"]
+            calories=food1["nutrition"]["nutrients"][0]["amount"]
+            new_food=Food(spoon_id=spoon_id,name=name,calories=calories,img=img)
+
+            if(bool(Food.query.filter_by(spoon_id=spoon_id).first())):
+                food = Food.query.get_or_404(spoon_id)
+                food.name=name
+                food.img=img
+                food.calories=calories
+                db.session.add(food)
+            else:
+                db.session.add(new_food)
+            db.session.commit()
+
+        data['results'].extend(data2['results'])
         
         return render_template('users/food-intake.html', form=form, data=data)
     return render_template('users/food-intake.html', form=form)
@@ -201,3 +258,8 @@ def show_recipe(food_id):
     # import pdb;pdb.set_trace()
     url=data['url']
     return render_template("recipe-card.html",url=url)
+
+# @app.route('/food/eat/<int:food_id>',methods=['POST'])
+# def add_food(food_id):
+#     resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/nutritionWidget.json',params={"apiKey":API_SECRET_KEY})
+#     data = resp.json()
