@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, User, BMI, Food, Ingredients
+from models import UserFood, UserIngredients, db, connect_db, User, BMI, Food, Ingredients
 
 from forms import FoodIntakeForm, UserAddForm, UserEditForm, LoginForm, BMIForm, PlanForm
 
@@ -183,7 +183,7 @@ def handle_plan():
 
 @app.route('/food-intake',methods=['GET','POST'])
 @login_required
-def add_food():
+def search_food():
     form = FoodIntakeForm()
     if form.validate_on_submit():
         search = form.search.data
@@ -252,6 +252,7 @@ def add_food():
 
 
 @app.route('/recipes/<int:food_id>',methods=['GET'])
+@login_required
 def show_recipe(food_id):
     resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/card',params={"apiKey":API_SECRET_KEY})
     data = resp.json()
@@ -259,7 +260,20 @@ def show_recipe(food_id):
     url=data['url']
     return render_template("recipe-card.html",url=url)
 
-# @app.route('/food/eat/<int:food_id>',methods=['POST'])
-# def add_food(food_id):
-#     resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/nutritionWidget.json',params={"apiKey":API_SECRET_KEY})
-#     data = resp.json()
+@app.route('/food/eat/<int:food_id>',methods=['POST'])
+@login_required
+def add_food(food_id):
+    food = Food.query.get_or_404(food_id)
+    user_food=UserFood(spoon_id=food.spoon_id,user_id=g.user.id,name=food.name,calories=food.calories,img=food.img)
+    db.session.add(user_food)
+    db.session.commit()
+    return redirect("/food-intake")
+
+@app.route('/food/ing/<int:food_id>',methods=['POST'])
+@login_required
+def add_ing(food_id):
+    food = Ingredients.query.get_or_404(food_id)
+    user_ing=UserIngredients(spoon_id=food.spoon_id,user_id=g.user.id,name=food.name,calories=food.calories,img=food.img)
+    db.session.add(user_ing)
+    db.session.commit()
+    return redirect("/food-intake")

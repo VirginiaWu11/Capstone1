@@ -30,12 +30,16 @@
               </p>
               <p class="card-text">
                 {%if food != data["results"][0]%}
-                <a href="/food/eat/{{food.id}}" class="btn btn-primary">Add</a>
+                <form method="POST" action="/food/eat/{{food.id}}">
+                <button  class="btn btn-primary">Add</button>
+                </form>
                 <a href="/recipes/{{food.id}}" class="btn btn-primary"
                   >View Recipe</a
                 >
                 {% else %}
-                <a href="/food/ing/{{food.id}}" class="btn btn-primary">Add</a>
+                <form method="POST" action="/food/ing/{{food.id}}">
+                <button class="btn btn-primary">Add</button>
+                </form>
                 {% endif %}
               </p>
             </div>
