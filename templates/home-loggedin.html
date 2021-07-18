@@ -1,26 +1,47 @@
 {% extends 'base.html' %} {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="home-test">
+<!-- <div class="home-test">  -->
   <h1>Status</h1>
+  
+  <nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Weight</button>
+      <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">BMI</button>
+      
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab"> 
+      <div class="card" >
+        <div class="card-body">
+          <h5 class="card-title">Weight</h5>
+          <canvas id="weightLineChart" width="900" height="400"> </canvas>
+        </div>
+      </div>
+      
+    </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+      <div class="card" >
+        <div class="card-body">
+          <h5 class="card-title">BMI</h5>
+          <canvas id="BMILineChart" width="900" height="400"> </canvas>
+        </div>
+      </div>
+       
+    </div>
+  </div>
   <div class="card" >
     <div class="card-body">
       <h5 class="card-title">calories in</h5>
       <canvas id="caloriesInLineChart" width="900" height="400"> </canvas>
     </div>
   </div>
-  <div class="card" >
-    <div class="card-body">
-      <h5 class="card-title">BMI</h5>
-      <canvas id="BMILineChart" width="900" height="400"> </canvas>
-    </div>
-  </div>
-  <div class="card" >
-    <div class="card-body">
-      <h5 class="card-title">Weight</h5>
-      <canvas id="weightLineChart" width="900" height="400"> </canvas>
-    </div>
-  </div>
+  
+
+
+  
+  
   <!-- <h3>calories in</h3>
   <canvas id="caloriesInLineChart" width="900" height="400"> </canvas> -->
 
@@ -65,6 +86,15 @@
       type:"line",
       data:{
         labels:{{ labels1 | safe}},
+        // weight: [
+        //   {
+        //     label: "weight",
+        //     data:{{values2 | safe}},
+        //     fill: false,
+        //     borderColor:"rgb(0,192,255)",
+
+        //   },
+        // ]
 
         datasets:[
           {
@@ -80,8 +110,6 @@
             data:{{values3 | safe}},
             fill: false,
             borderColor:"rgb(255,0,192)",
-
-
           },
           {
             label: "ideal-high",
@@ -89,15 +117,29 @@
             data:{{values4 | safe}},
             fill: false,
             borderColor:"rgb(255,0,192)",
-
-
           },
         ]
       },
-      option:{
-        responsive: false
-
-      }
+      options:{
+        // responsive: false,
+        // plugins:{
+        //   tooltip: {
+        //     callbacks: {
+        //       label: function(tooltipItem,data){
+        //         console.log(tooltipItem)
+        //         console.log(data)
+        //         // let label = BMILineChart.data.labels[tooltipItem.dataIndex];
+        //         let label = tooltipItem.dataset.label;
+        //         let value = BMILineChart.data.datasets[tooltipItem.datasetIndex].data[tooltipItem.dataIndex];
+        //         let label1 = "Weight";
+        //         let value1 = BMILineChart.data.weight[tooltipItem.datasetIndex].data[tooltipItem.dataIndex];
+        //         return label + ": hey" + value +label1 + value1;
+        //       }
+        //     }
+        //   }
+        // }
+      },
+      
     });
     let weightC = document.getElementById("weightLineChart").getContext("2d");
     let weightLineChart = new Chart(weightC,{

@@ -30,6 +30,12 @@ bmi3 = BMI(
     date= '2021-07-03',
     user_id = 1
 )
+bmi4 = BMI(
+    weight = 145,
+    bmi=round(703*145/((64)**2),2),
+    date= '2021-07-18',
+    user_id = 1
+)
 
 
 user_food1 = UserFood(
@@ -99,7 +105,7 @@ user_food8 = UserFood(
 
 
 
-db.session.add_all([user,bmi1,bmi2,bmi3])
+db.session.add_all([user,bmi1,bmi2,bmi3, bmi4])
 db.session.commit()
 db.session.add_all([user_food1,user_food2,user_food3,user_food4,user_food5,user_food6,user_food7,user_food8])
 db.session.commit()

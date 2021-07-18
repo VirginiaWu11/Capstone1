@@ -2,6 +2,7 @@ import os
 import requests
 import json
 
+from datetime import datetime
 from functools import wraps
 from secrets import API_SECRET_KEY
 from sqlalchemy.sql import func
@@ -197,10 +198,19 @@ def bmiForm():
 
         if g.user:            
             user = g.user
-            user.bmi.bmi = bmi
+            # user.bmi.bmi = bmi
+            # raise
+            # import pdb;pdb.set_trace()
             user.height = height
-            add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
-            db.session.add_all([user,add_bmi])
+            b = db.session.query(BMI).filter(BMI.user_id==g.user.id,BMI.date==datetime.utcnow().date()).first()
+            if not b:
+                add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
+                db.session.add_all([user,add_bmi])
+            else:
+                b.bmi=bmi
+                b.weight=weight
+                db.session.add_all([user,b])
+
             db.session.commit()
             return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat,lbs_away=lbs_away,plan_form=plan_form)
 
@@ -264,43 +274,13 @@ def search_food():
 
         data['results'][0]["nutrition"]=content["nutrition"]
 
-        # calories=data['results'][0]["nutrition"]["nutrients"][0]["amount"]
-        # ing1 = Ingredients(spoon_id=food_id,name=name,calories=calories,img=img_url)
-
-        # if(bool(Ingredients.query.filter_by(spoon_id=food_id).first())):
-        #     ing = Ingredients.query.get_or_404(food_id)
-        #     ing.name=name
-        #     ing.calories=calories
-        #     ing.img=img_url
-        #     db.session.add(ing)
-        # else:
-        #     db.session.add(ing1)
-        # db.session.commit()
-
 
         resp2 = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":3,"apiKey":API_SECRET_KEY})
         data2 = resp2.json() 
 
-        # for food1 in data2['results']:
-        #     spoon_id=food1["id"]
-        #     name = food1["title"]
-        #     img = food1["image"]
-        #     calories=food1["nutrition"]["nutrients"][0]["amount"]
-        #     new_food=Food(spoon_id=spoon_id,name=name,calories=calories,img=img)
-
-            # if(bool(Food.query.filter_by(spoon_id=spoon_id).first())):
-            #     food = Food.query.get_or_404(spoon_id)
-            #     food.name=name
-            #     food.img=img
-            #     food.calories=calories
-            #     db.session.add(food)
-            # else:
-            #     db.session.add(new_food)
-            # db.session.commit()
-
         data['results'].extend(data2['results'])
         session["data"] = data
-        # import pdb;pdb.set_trace()
+
         return render_template('users/food-intake.html', form=form, data=data)
     return render_template('users/food-intake.html', form=form)
 
@@ -324,17 +304,4 @@ def add_food(food_id):
             db.session.commit()
     return redirect("/")
 
-    # food = Food.query.get_or_404(food_id)
-    # user_food=UserFood(spoon_id=food.spoon_id,user_id=g.user.id,name=food.name,calories=food.calories,img=food.img)
-    # db.session.add(user_food)
-    # db.session.commit()
-    # return redirect("/")
-
-# @app.route('/food/ing/<int:food_id>',methods=['POST'])
-# @login_required
-# def add_ing(food_id):
-#     food = Ingredients.query.get_or_404(food_id)
-#     user_ing=UserIngredients(spoon_id=food.spoon_id,user_id=g.user.id,name=food.name,calories=food.calories,img=food.img)
-#     db.session.add(user_ing)
-#     db.session.commit()
-#     return redirect("/")
+  
