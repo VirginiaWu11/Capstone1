@@ -137,6 +137,7 @@ def signup():
             user = User.signup(
                 username=form.username.data,
                 password=form.password.data,
+                height= BMI.cal_height_inches(form.height.data),
                 image_url=form.image_url.data or User.image_url.default.arg,
             )
 

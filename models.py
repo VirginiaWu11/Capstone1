@@ -51,7 +51,7 @@ class User(db.Model):
     user_food = db.relationship('UserFood', backref='users')
     
     @classmethod
-    def signup(cls, username, password, image_url):
+    def signup(cls, username, password, height, image_url):
         """Sign up user.
         Hashes password and adds user to system.
         """
@@ -61,6 +61,7 @@ class User(db.Model):
         user = User(
             username=username,
             password=hashed_pwd,
+            height=height,
             image_url=image_url,
         )
 
