@@ -1,6 +1,6 @@
 from os import name
 from app import db
-from models import User, Food,BMI, UserFood, UserIngredients
+from models import User,BMI, UserFood
 
 
 db.drop_all()
@@ -31,54 +31,54 @@ bmi3 = BMI(
     user_id = 1
 )
 
-user_ing1= UserIngredients(
-    spoon_id = 9040,
-    user_id = 1,
-    date = "2021-07-10",
-    name = "banana",
-    calories = 105,
-    img = "https://spoonacular.com/cdn/ingredients_100x100/bananas.jpg"
-)
-user_ing2= UserIngredients(
-    spoon_id = 9040,
-    user_id = 1,
-    date = "2021-07-11",
-    name = "banana",
-    calories = 105,
-    img = "https://spoonacular.com/cdn/ingredients_100x100/bananas.jpg"
-)
-user_ing3= UserIngredients(
-    spoon_id = 1123,
-    user_id = 1,
-    date = "2021-07-11",
-    name = "egg",
-    calories = 63,
-    img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
-)
-user_ing4= UserIngredients(
-    spoon_id = 1123,
-    user_id = 1,
-    date = "2021-07-11",
-    name = "egg",
-    calories = 63,
-    img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
-)
-user_ing5= UserIngredients(
-    spoon_id = 1123,
-    user_id = 1,
-    date = "2021-07-12",
-    name = "egg",
-    calories = 63,
-    img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
-)
-user_ing6= UserIngredients(
-    spoon_id = 1123,
-    user_id = 1,
-    date = "2021-07-12",
-    name = "egg",
-    calories = 63,
-    img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
-)
+# user_ing1= UserIngredients(
+#     spoon_id = 9040,
+#     user_id = 1,
+#     date = "2021-07-10",
+#     name = "banana",
+#     calories = 105,
+#     img = "https://spoonacular.com/cdn/ingredients_100x100/bananas.jpg"
+# )
+# user_ing2= UserIngredients(
+#     spoon_id = 9040,
+#     user_id = 1,
+#     date = "2021-07-11",
+#     name = "banana",
+#     calories = 105,
+#     img = "https://spoonacular.com/cdn/ingredients_100x100/bananas.jpg"
+# )
+# user_ing3= UserIngredients(
+#     spoon_id = 1123,
+#     user_id = 1,
+#     date = "2021-07-11",
+#     name = "egg",
+#     calories = 63,
+#     img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
+# )
+# user_ing4= UserIngredients(
+#     spoon_id = 1123,
+#     user_id = 1,
+#     date = "2021-07-11",
+#     name = "egg",
+#     calories = 63,
+#     img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
+# )
+# user_ing5= UserIngredients(
+#     spoon_id = 1123,
+#     user_id = 1,
+#     date = "2021-07-12",
+#     name = "egg",
+#     calories = 63,
+#     img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
+# )
+# user_ing6= UserIngredients(
+#     spoon_id = 1123,
+#     user_id = 1,
+#     date = "2021-07-12",
+#     name = "egg",
+#     calories = 63,
+#     img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
+# )
 
 user_food1 = UserFood(
     spoon_id = 1096010,
@@ -150,5 +150,5 @@ user_food8 = UserFood(
 db.session.add_all([user,bmi1,bmi2,bmi3])
 # user_ing2,user_ing3,user_ing4,user_ing5,user_ing6,user_food1,user_food2,user_food3,user_food4,user_food5,user_food6,user_food7,user_food8])
 db.session.commit()
-db.session.add_all([user_ing1,user_ing2,user_ing3,user_ing4,user_ing5,user_ing6,user_food1,user_food2,user_food3,user_food4,user_food5,user_food6,user_food7,user_food8])
+db.session.add_all([user_food1,user_food2,user_food3,user_food4,user_food5,user_food6,user_food7,user_food8])
 db.session.commit()

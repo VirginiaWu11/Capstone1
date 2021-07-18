@@ -159,49 +159,49 @@ class UserIngredients(db.Model):
         default="/static/images/w-logo.png"
     )
 
-class Food(db.Model):
+# class Food(db.Model):
 
-    __tablename__ = 'food'
+#     __tablename__ = 'food'
 
-    spoon_id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+#     spoon_id = db.Column(
+#         db.Integer,
+#         primary_key=True
+#     )
     
-    name = db.Column(
-        db.Text,
-        nullable=False
-    )
-    calories = db.Column(
-        db.Integer,
-        nullable=False
-    )
-    img = db.Column(
-        db.Text,
-        default="/static/images/w-logo.png"
-    )
+#     name = db.Column(
+#         db.Text,
+#         nullable=False
+#     )
+#     calories = db.Column(
+#         db.Integer,
+#         nullable=False
+#     )
+#     img = db.Column(
+#         db.Text,
+#         default="/static/images/w-logo.png"
+#     )
 
-class Ingredients(db.Model):
+# class Ingredients(db.Model):
 
-    __tablename__ = 'ingredients'
+#     __tablename__ = 'ingredients'
 
-    spoon_id = db.Column(
-        db.Integer,
-        primary_key=True,
-    )
+#     spoon_id = db.Column(
+#         db.Integer,
+#         primary_key=True,
+#     )
 
-    name = db.Column(
-        db.Text,
-        nullable=False
-    )
-    calories = db.Column(
-        db.Integer,
-        nullable=False
-    )
-    img = db.Column(
-        db.Text,
-        default="/static/images/w-logo.png"
-    )
+#     name = db.Column(
+#         db.Text,
+#         nullable=False
+#     )
+#     calories = db.Column(
+#         db.Integer,
+#         nullable=False
+#     )
+#     img = db.Column(
+#         db.Text,
+#         default="/static/images/w-logo.png"
+#     )
 
 
 
