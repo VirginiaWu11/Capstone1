@@ -4,6 +4,7 @@ import json
 
 from functools import wraps
 from secrets import API_SECRET_KEY
+from sqlalchemy.sql import func
 
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
@@ -69,7 +70,57 @@ def add_user_to_g():
 def homepage():
     
     if g.user:
-        return render_template('home-loggedin.html')
+         
+        qry = db.session.query(
+                    
+                    UserIngredients.date.label('date'),
+                    func.sum(UserIngredients.calories).label("total_calories"),
+                    ).filter_by(user_id=g.user.id)
+        qry = qry.group_by(UserIngredients.date)
+
+        data = [res for res in qry.all()]
+        # print("*****************",dat)
+        data=[(t[0].strftime('%m/%d/%Y'),t[1]) for t in data]
+        data.sort()
+            
+        # import pdb;pdb.set_trace()
+        labels = [row[0] for row in data]
+        values = [row[1] for row in data]
+
+        # qry1 = db.session.query(
+                    
+        #             # BMI.date.label('date'),
+        #             func.max(BMI.date).label("date"),
+        #             BMI.bmi.label("BMI"),
+        #             # BMI.weight.label("weight")
+                   
+        #             ).filter_by(user_id=g.user.id)
+        # qry1 = qry1.group_by(BMI.bmi, 
+        # # BMI.weight
+        # )
+
+        qry1 = BMI.query.filter_by(user_id=g.user.id)
+
+
+        data1 = [(res.date,res.bmi, res.weight) for res in qry1.all()]
+        print("*****************",data1)
+        height = int(g.user.height)
+        data1=[(t[0].strftime('%m/%d/%Y'),t[1],t[2],18.5,24.9,int(18.01*((height)**2)/703),int(25*((height)**2)/703)) for t in data1]
+        data1.sort()
+            
+        # import pdb;pdb.set_trace()
+        labels1 = [row[0] for row in data1]
+        values1 = [row[1] for row in data1]
+        values2 = [row[2] for row in data1]
+        values3 = [row[3] for row in data1]
+        values4 = [row[4] for row in data1]
+        values5 = [row[5] for row in data1]
+        values6 = [row[6] for row in data1]
+
+
+        return render_template('home-loggedin.html',labels=labels, values=values, labels1=labels1, values1=values1,values2=values2, values3=values3,values4=values4, values5=values5,values6=values6)
+
+    
     return render_template('home.html')
 
 
@@ -267,7 +318,7 @@ def add_food(food_id):
     user_food=UserFood(spoon_id=food.spoon_id,user_id=g.user.id,name=food.name,calories=food.calories,img=food.img)
     db.session.add(user_food)
     db.session.commit()
-    return redirect("/food-intake")
+    return redirect("/")
 
 @app.route('/food/ing/<int:food_id>',methods=['POST'])
 @login_required
@@ -276,4 +327,4 @@ def add_ing(food_id):
     user_ing=UserIngredients(spoon_id=food.spoon_id,user_id=g.user.id,name=food.name,calories=food.calories,img=food.img)
     db.session.add(user_ing)
     db.session.commit()
-    return redirect("/food-intake")
+    return redirect("/")

@@ -1,5 +1,146 @@
 {% extends 'base.html' %} {% block content %}
-<div class="home-loggedout">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="home-test">
+  <h1>Status</h1>
+  <div class="card" >
+    <div class="card-body">
+      <h5 class="card-title">calories in</h5>
+      <canvas id="caloriesInLineChart" width="900" height="400"> </canvas>
+    </div>
+  </div>
+  <div class="card" >
+    <div class="card-body">
+      <h5 class="card-title">BMI</h5>
+      <canvas id="BMILineChart" width="900" height="400"> </canvas>
+    </div>
+  </div>
+  <div class="card" >
+    <div class="card-body">
+      <h5 class="card-title">Weight</h5>
+      <canvas id="weightLineChart" width="900" height="400"> </canvas>
+    </div>
+  </div>
+  <!-- <h3>calories in</h3>
+  <canvas id="caloriesInLineChart" width="900" height="400"> </canvas> -->
+
+  <!-- <h3>BMI</h3>
+  <canvas id="BMILineChart" width="900" height="400"> </canvas>
+  <h3>Weight</h3>
+  <canvas id="weightLineChart" width="900" height="400"> </canvas> -->
+  <script>
+    let ctx = document.getElementById("caloriesInLineChart").getContext("2d");
+    let caloriesInLineChart = new Chart(ctx,{
+      type:"line",
+      data:{
+        labels:{{ labels | safe}},
+
+        datasets:[
+          {
+            label: "Data points",
+            data:{{values | safe}},
+            fill: true,
+            borderColor:"rgb(0,192,255)",
+            // color:"rgb(75,192,192)",
+            // backgroundColor: "rgb(0,192,192)"
+          }
+        ]
+      },
+      option:{
+        responsive: false,
+        // plugins: {
+        //   legend: {
+        //     position: 'top',
+        //   },
+        //   title: {
+        //     display: true,
+        //     text: 'Line Chart'
+        //   }
+        // }
+      }
+
+    });
+    let bmiC = document.getElementById("BMILineChart").getContext("2d");
+    let BMILineChart = new Chart(bmiC,{
+      type:"line",
+      data:{
+        labels:{{ labels1 | safe}},
+
+        datasets:[
+          {
+            label: "BMI",
+            data:{{values1 | safe}},
+            fill: false,
+            borderColor:"rgb(0,192,255)",
+
+          },
+          {
+            label: "ideal-low",
+            borderDash: [5, 5],
+            data:{{values3 | safe}},
+            fill: false,
+            borderColor:"rgb(255,0,192)",
+
+
+          },
+          {
+            label: "ideal-high",
+            borderDash: [5, 5],
+            data:{{values4 | safe}},
+            fill: false,
+            borderColor:"rgb(255,0,192)",
+
+
+          },
+        ]
+      },
+      option:{
+        responsive: false
+
+      }
+    });
+    let weightC = document.getElementById("weightLineChart").getContext("2d");
+    let weightLineChart = new Chart(weightC,{
+      type:"line",
+      data:{
+        labels:{{ labels1 | safe}},
+
+        datasets:[
+
+          {
+            label: "weight",
+            data:{{values2 | safe}},
+            fill: false,
+            borderColor:"rgb(0,192,255)",
+
+          },
+          {
+            label: "ideal-low",
+            borderDash: [5, 5],
+            data:{{values5 | safe}},
+            fill: false,
+            borderColor:"rgb(255,0,192)",
+
+
+          },
+          {
+            label: "ideal-high",
+            borderDash: [5, 5],
+            data:{{values6 | safe}},
+            fill: false,
+            borderColor:"rgb(255,0,192)",
+
+
+          },
+        ]
+      },
+      option:{
+        responsive: false
+
+      }
+    });
+  </script>
   <hQ>HIIIIIIII</hQ>
+</div>
 </div>
 {% endblock %}

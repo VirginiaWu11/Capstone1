@@ -41,7 +41,7 @@ user_ing1= UserIngredients(
 user_ing2= UserIngredients(
     spoon_id = 9040,
     user_id = 1,
-    date = "2021-07-10",
+    date = "2021-07-11",
     name = "banana",
     calories = 105,
     img = "https://spoonacular.com/cdn/ingredients_100x100/bananas.jpg"
@@ -51,7 +51,7 @@ user_ing3= UserIngredients(
     user_id = 1,
     date = "2021-07-11",
     name = "egg",
-    calories = 105,
+    calories = 63,
     img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
 )
 user_ing4= UserIngredients(
@@ -59,7 +59,7 @@ user_ing4= UserIngredients(
     user_id = 1,
     date = "2021-07-11",
     name = "egg",
-    calories = 105,
+    calories = 63,
     img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
 )
 user_ing5= UserIngredients(
@@ -67,7 +67,7 @@ user_ing5= UserIngredients(
     user_id = 1,
     date = "2021-07-12",
     name = "egg",
-    calories = 105,
+    calories = 63,
     img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
 )
 user_ing6= UserIngredients(
@@ -75,7 +75,7 @@ user_ing6= UserIngredients(
     user_id = 1,
     date = "2021-07-12",
     name = "egg",
-    calories = 105,
+    calories = 63,
     img = "https://spoonacular.com/cdn/ingredients_100x100/egg.png"
 )
 
