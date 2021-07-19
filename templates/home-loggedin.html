@@ -52,18 +52,18 @@
   <script>
     let ctx = document.getElementById("caloriesInLineChart").getContext("2d");
     let caloriesInLineChart = new Chart(ctx,{
-      type:"line",
+      type:"bar",
       data:{
         labels:{{ labels | safe}},
 
         datasets:[
           {
-            label: "Data points",
+            label: "Calories In",
             data:{{values | safe}},
             fill: true,
             borderColor:"rgb(0,192,255)",
             // color:"rgb(75,192,192)",
-            // backgroundColor: "rgb(0,192,192)"
+            backgroundColor: "rgba(0,192,255,.5)",
           }
         ]
       },

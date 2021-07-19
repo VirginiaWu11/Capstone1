@@ -285,8 +285,20 @@ def search_food():
     return render_template('users/food-intake.html', form=form)
 
 
+@app.route('/recipes',methods=['GET','POST'])
+def search_recipes():
+    form = FoodIntakeForm()
+    if form.validate_on_submit():
+        search = form.search.data
+        
+        resp2 = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":10,"apiKey":API_SECRET_KEY})
+        data = resp2.json() 
+
+        return render_template('recipes.html', form=form, data=data)
+    return render_template('recipes.html', form=form)
+
+
 @app.route('/recipes/<int:food_id>',methods=['GET'])
-@login_required
 def show_recipe(food_id):
     resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/card',params={"apiKey":API_SECRET_KEY})
     data = resp.json()
