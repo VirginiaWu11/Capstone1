@@ -288,21 +288,21 @@ def bmiForm():
     return render_template('users/bmi.html', form=form)
 
 
-@app.route('/plan',methods=['GET','POST'])
-@login_required
-def handle_plan():
+# @app.route('/plan',methods=['GET','POST'])
+# @login_required
+# def handle_plan():
 
-    form= PlanForm()
-    plan_choices = [(plan,plan) for plan in plans]
-    form.plan.choices=plan_choices
-    if form.validate_on_submit():
-        user = g.user
-        user.diet_plan=form.plan.data
-        db.session.add(user)
-        db.session.commit()
-        flash('plan successfully added/updated')
-        return redirect('/')
-    return render_template('users/plan.html', form=form)
+#     form= PlanForm()
+#     plan_choices = [(plan,plan) for plan in plans]
+#     form.plan.choices=plan_choices
+#     if form.validate_on_submit():
+#         user = g.user
+#         user.diet_plan=form.plan.data
+#         db.session.add(user)
+#         db.session.commit()
+#         flash('plan successfully added/updated')
+#         return redirect('/')
+#     return render_template('users/plan.html', form=form)
 
 @app.route('/food-intake',methods=['GET','POST'])
 @login_required
