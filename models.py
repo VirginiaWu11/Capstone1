@@ -38,10 +38,10 @@ class User(db.Model):
         db.Text,
         default="/static/images/default-pic.png",
     )
-    weight = db.Column(
-        db.Float,
-        nullable=False
-    )
+    # weight = db.Column(
+    #     db.Float,
+    #     nullable=False
+    # )
     height=db.Column(
         db.Text,
         nullable = True
