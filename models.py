@@ -38,6 +38,10 @@ class User(db.Model):
         db.Text,
         default="/static/images/default-pic.png",
     )
+    weight = db.Column(
+        db.Float,
+        nullable=False
+    )
     height=db.Column(
         db.Text,
         nullable = True
@@ -46,6 +50,24 @@ class User(db.Model):
         db.Text,
         nullable = True
     )
+    gender = db.Column(
+        db.Text,
+        nullable = False
+    )
+    age = db.Column(
+        db.Integer,
+        nullable = False
+    )
+    activity_level = db.Column(
+        db.Text,
+        nullable = False
+    )
+# https://www.healthline.com/health/fitness-exercise/how-many-calories-do-i-burn-a-day#calories-burned
+    # 1.2, or sedentary (little to no exercise)
+    # 1.375, or lightly active (light exercise 1–3 days per week)
+    # 1.55, or moderately active (moderate exercise 3–5 days per week)
+    # 1.725, or very active (hard exercise 6–7 days per week)
+    # 1.9, or extra active (very hard exercise, training, or a physical job)
 
     bmi = db.relationship('BMI', backref='users')
     user_food = db.relationship('UserFood', backref='users')
@@ -82,6 +104,12 @@ class User(db.Model):
                 return user
 
         return False
+
+    @classmethod
+    def basal_metabolic_rate(weight, height, age, gender):
+        if gender=="female":
+            return 655.1 + (4.35 * weight) + (4.7 * height) - (4.7 * age)
+        return 66 + (6.2 * weight) + (12.7 * height) - (6.76 * age)
 
 class UserFood(db.Model):
 

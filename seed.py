@@ -9,8 +9,12 @@ db.create_all()
 user = User(
     username="123abc",
     password="$2b$12$fSlKmZ/ord1cMM3cTl18zuZw7yNtGuMlJukeyrX8N95WSsbKo/cdy",
+    weight = 150,
     height = 64,
     image_url='/static/images/default-pic.png',
+    gender = 'female',
+    age = 30,
+    activity_level= "sedentary",
 )
 bmi1 = BMI(
     weight = 155,
