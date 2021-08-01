@@ -154,14 +154,23 @@ def signup():
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
     form = UserAddForm()
-
+    # plan_form= PlanForm()
+    # plan_choices = [(plan,plan) for plan in plans]
+    # plan_form.plan.choices=plan_choices
+    form.gender.choices=[("female","female"),("male","male")]
+    activity_level_choices= [(al,al) for al in activity_levels]
+    form.activity_level.choices=activity_level_choices
     if form.validate_on_submit():
         try:
             user = User.signup(
                 username=form.username.data,
                 password=form.password.data,
+                weight=form.weight.data,
                 height= BMI.cal_height_inches(form.height.data),
                 image_url=form.image_url.data or User.image_url.default.arg,
+                gender=form.gender.data,
+                age=form.age.data,
+                activity_level=form.activity_level.data,
             )
 
         except IntegrityError as e:

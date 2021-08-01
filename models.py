@@ -40,7 +40,7 @@ class User(db.Model):
         default="/static/images/default-pic.png",
     )
     weight = db.Column(
-        db.Float,
+        db.Integer,
         nullable=False
     )
     height=db.Column(
@@ -75,7 +75,7 @@ class User(db.Model):
     user_food = db.relationship('UserFood', backref='users')
     
     @classmethod
-    def signup(cls, username, password, height, image_url):
+    def signup(cls, username, password, weight, height, image_url, gender, age, activity_level):
         """Sign up user.
         Hashes password and adds user to system.
         """
@@ -85,8 +85,12 @@ class User(db.Model):
         user = User(
             username=username,
             password=hashed_pwd,
+            weight=weight,
             height=height,
             image_url=image_url,
+            gender=gender,
+            age=age,
+            activity_level=activity_level,
         )
 
         db.session.add(user)

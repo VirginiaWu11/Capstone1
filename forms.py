@@ -11,7 +11,12 @@ class UserAddForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
     image_url = StringField('(Optional) Image URL')
+    weight = IntegerField("Weight",validators=[DataRequired()])
     height = StringField("Height (feet'inches e.g. 5'4)",validators=[DataRequired()])
+    gender = SelectField('Gender', validators=[DataRequired()])
+    age = IntegerField("Age",validators=[DataRequired()])
+    activity_level = SelectField('Activity Level', validators=[DataRequired()])
+    
 
 
 class UserEditForm(FlaskForm):
