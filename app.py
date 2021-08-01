@@ -300,11 +300,24 @@ def search_recipes():
 
 @app.route('/recipes/<int:food_id>',methods=['GET'])
 def show_recipe(food_id):
+    
     resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/card',params={"apiKey":API_SECRET_KEY})
     data = resp.json()
     # import pdb;pdb.set_trace()
-    url=data['url']
-    return render_template("recipe-card.html",url=url)
+    print("*************************", data)
+    try:
+        url=data['url']
+        return render_template("recipe-card.html",url=url)  
+    except KeyError:
+        return render_template('404.html'), 404
+
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """404 NOT FOUND page."""
+
+    return render_template('404.html'), 404
 
 @app.route('/food/eat/<int:food_id>',methods=['POST'])
 @login_required
