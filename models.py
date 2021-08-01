@@ -38,10 +38,10 @@ class User(db.Model):
         db.Text,
         default="/static/images/default-pic.png",
     )
-    # weight = db.Column(
-    #     db.Float,
-    #     nullable=False
-    # )
+    weight = db.Column(
+        db.Float,
+        nullable=False
+    )
     height=db.Column(
         db.Text,
         nullable = True
@@ -106,7 +106,7 @@ class User(db.Model):
         return False
 
     @classmethod
-    def basal_metabolic_rate(weight, height, age, gender):
+    def basal_metabolic_rate(cls,weight, height, age, gender):
         if gender=="female":
             return 655.1 + (4.35 * weight) + (4.7 * height) - (4.7 * age)
         return 66 + (6.2 * weight) + (12.7 * height) - (6.76 * age)

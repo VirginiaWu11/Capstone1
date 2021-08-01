@@ -84,10 +84,12 @@ def homepage():
         # print("*****************",dat)
         data=[(t[0].strftime('%m/%d/%Y'),t[1]) for t in data]
         data.sort()
-            
+        
+
         # import pdb;pdb.set_trace()
         labels = [row[0] for row in data]
         values = [row[1] for row in data]
+        
 
         # qry1 = db.session.query(
                     
@@ -107,6 +109,9 @@ def homepage():
         data1 = [(res.date,res.bmi, res.weight) for res in qry1.all()]
         print("*****************",data1)
         height = int(g.user.height)
+
+        
+
         data1=[(t[0].strftime('%m/%d/%Y'),t[1],t[2],18.5,24.9,int(18.01*((height)**2)/703),int(25*((height)**2)/703)) for t in data1]
         data1.sort()
             
@@ -118,9 +123,12 @@ def homepage():
         values4 = [row[4] for row in data1]
         values5 = [row[5] for row in data1]
         values6 = [row[6] for row in data1]
-
-
-        return render_template('home-loggedin.html',labels=labels, values=values, labels1=labels1, values1=values1,values2=values2, values3=values3,values4=values4, values5=values5,values6=values6)
+        #### calories out
+        values7 = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)) for row in data]
+        # import pdb;pdb.set_trace()
+        return render_template('home-loggedin.html',labels=labels, values=values, labels1=labels1, values1=values1,values2=values2, values3=values3,values4=values4, values5=values5,values6=values6,
+        values7=values7)
+        
 
     
     return render_template('home.html')
