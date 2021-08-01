@@ -14,7 +14,7 @@ user = User(
     image_url='/static/images/default-pic.png',
     gender = 'female',
     age = 30,
-    activity_level= "sedentary",
+    activity_level= "Sedentary (little to no exercise)",
 )
 bmi1 = BMI(
     weight = 155,

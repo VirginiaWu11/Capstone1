@@ -50,6 +50,15 @@ plans = {
     'Gain 1.5lbs per week; 750 calories surplus': 750,
 }
 
+activity_levels={
+    "Sedentary (little to no exercise)":1.2,
+    "Lightly active (light exercise 1–3 days per week)":1.375,
+    "Moderately active (moderate exercise 3–5 days per week)":1.55,
+    "Very active (hard exercise 6–7 days per week)":1.725,
+    "Extra active (very hard exercise, training, or a physical job)":1.9
+}
+
+
 def keep_login(user):
     """Add user to session."""
     session[CURR_USER_KEY] = user.id
@@ -125,7 +134,7 @@ def homepage():
         values5 = [row[5] for row in data1]
         values6 = [row[6] for row in data1]
         #### calories out
-        values7 = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)) for row in data]
+        values7 = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)*activity_levels[g.user.activity_level]) for row in data]
 
         #### Goal Calories In
         values8 = [c_out+plans[g.user.diet_plan] for c_out in values7]
