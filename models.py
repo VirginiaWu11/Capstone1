@@ -1,5 +1,6 @@
 from datetime import datetime
 from bisect import bisect_right
+from requests.sessions import default_headers
 
 from sqlalchemy.orm import backref
 
@@ -48,7 +49,8 @@ class User(db.Model):
     )
     diet_plan = db.Column(
         db.Text,
-        nullable = True
+        nullable = False,
+        default="Maintain current weight; 0 calories deficit"
     )
     gender = db.Column(
         db.Text,

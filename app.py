@@ -41,6 +41,7 @@ def login_required(func):
     return wrapper
 
 plans = {
+    'Maintain current weight; 0 calories deficit':0,
     'Lose .5lb per week; 250 calories deficit': -250,
     'Lose 1lb per week; 500 calories deficit': -500,
     'Lose 1.5lbs per week; 750 calories deficit': -750,
@@ -125,9 +126,12 @@ def homepage():
         values6 = [row[6] for row in data1]
         #### calories out
         values7 = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)) for row in data]
+
+        #### Goal Calories In
+        values8 = [c_out+plans[g.user.diet_plan] for c_out in values7]
         # import pdb;pdb.set_trace()
         return render_template('home-loggedin.html',labels=labels, values=values, labels1=labels1, values1=values1,values2=values2, values3=values3,values4=values4, values5=values5,values6=values6,
-        values7=values7)
+        values7=values7,values8=values8)
         
 
     
