@@ -192,6 +192,8 @@ class BMI(db.Model):
     @classmethod
     def cal_height_inches(cls,height): #height is a string 5'4
         """Convert height from String to Number in Inches"""
+        if "'" not in height:
+            return height
         return int(height[0:height.index("'")])*12+int(height[height.index("'")+1])
 
     @classmethod

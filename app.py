@@ -154,9 +154,7 @@ def signup():
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
     form = UserAddForm()
-    # plan_form= PlanForm()
-    # plan_choices = [(plan,plan) for plan in plans]
-    # plan_form.plan.choices=plan_choices
+
     form.gender.choices=[("female","female"),("male","male")]
     activity_level_choices= [(al,al) for al in activity_levels]
     form.activity_level.choices=activity_level_choices
@@ -210,6 +208,37 @@ def login():
 
     return render_template('users/login.html', form=form)
 
+@app.route('/users/profile', methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    """Update profile for current user."""
+    
+    user = g.user
+    form = UserAddForm(obj=user)
+    form.gender.choices=[("female","female"),("male","male")]
+    activity_level_choices= [(al,al) for al in activity_levels]
+    form.activity_level.choices=activity_level_choices
+    plan_choices = [(plan,plan) for plan in plans]
+    form.diet_plan.choices=plan_choices
+
+    if form.validate_on_submit():
+        if User.authenticate(user.username, form.password.data):
+            user.username = form.username.data,
+            user.weight=form.weight.data,
+            user.height= BMI.cal_height_inches(form.height.data),
+            user.image_url=form.image_url.data or User.image_url.default.arg,
+            user.gender=form.gender.data,
+            user.age=form.age.data,
+            user.activity_level=form.activity_level.data,
+            user.diet_plan=form.diet_plan.data
+            db.session.commit()
+            flash("User profile successfully updated","success")
+            return redirect("/")
+
+        flash("Wrong password, please try again.", 'danger')
+
+    return render_template('users/edit.html', form=form, user_id=user.id)
+
 
 ###### bmi
 
@@ -232,6 +261,7 @@ def bmiForm():
             # raise
             # import pdb;pdb.set_trace()
             user.height = height
+            user.weight = weight
             b = db.session.query(BMI).filter(BMI.user_id==g.user.id,BMI.date==datetime.utcnow().date()).first()
             if not b:
                 add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
