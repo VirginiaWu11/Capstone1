@@ -2,7 +2,7 @@ import os
 import requests
 import json
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from secrets import API_SECRET_KEY
 from sqlalchemy.sql import func
@@ -399,8 +399,12 @@ def add_food(food_id):
 @login_required
 def show_food():
     data = UserFood.query.filter_by(user_id=g.user.id, date= datetime.utcnow().date())
+    current_date = datetime.utcnow().date()
+    one_week_ago= current_date - timedelta(weeks=1)
+    food_within_the_last_week = UserFood.query.filter(UserFood.user_id==g.user.id,UserFood.date>one_week_ago).all()
     # import pdb;pdb.set_trace()
-    return render_template('users/meals.html', data=data)
+
+    return render_template('users/meals.html', data=data, wfood=food_within_the_last_week)
 
 @app.route("/user-food/<int:user_food_id>/delete", methods=["POST"])
 @login_required
@@ -413,3 +417,4 @@ def delete_food(user_food_id):
     db.session.commit()
     flash(f"{food.name} successfully deleted.", "success")
     return redirect("/food-journal")
+
