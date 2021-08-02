@@ -160,6 +160,7 @@ def signup():
     form.activity_level.choices=activity_level_choices
     plan_choices = [(plan,plan) for plan in plans]
     form.diet_plan.choices=plan_choices
+
     if form.validate_on_submit():
         try:
             user = User.signup(
@@ -171,6 +172,7 @@ def signup():
                 gender=form.gender.data,
                 age=form.age.data,
                 activity_level=form.activity_level.data,
+                diet_plan=form.diet_plan.data
             )
 
         except IntegrityError as e:
