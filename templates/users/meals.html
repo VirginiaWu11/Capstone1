@@ -5,7 +5,7 @@
     <div>
       <h1>Today's Meals</h1>
       <div class="row mt-3">
-        {% if data %} {% for food in data%}
+        {% if data[0] %} {% for food in data%}
         <div class="col-md-6 col-lg-3">
           <div class="card h-100">
             <img src="{{food.img}}" class="card-img-top" alt="{{food.title}}" />
@@ -23,14 +23,18 @@
           </div>
         </div>
 
-        {% endfor %}{% else %}
+        {% endfor %}
       </div>
-      <h6>Click <a href="#">here</a> to add meals to today's calories</h6>
+      {% else %}
+      <h5>
+        Meals have yet to be added. Click <a href="/food-intake">here</a> to add
+        meals to today's calories intake.
+      </h5>
       {% endif %}
     </div>
     <br />
     <hr />
-    {% if wfood %}
+    {% if wfood[0] %}
     <h2>This week's meals</h2>
     <table class="table table-striped table-hover">
       <thead>
@@ -50,6 +54,10 @@
         {% endfor %}
       </tbody>
     </table>
+    {% else %}
+    <h5>
+      Click <a href="/food-intake">here</a> to add meals to today's calories
+    </h5>
     {% endif %}
   </div>
 </div>
