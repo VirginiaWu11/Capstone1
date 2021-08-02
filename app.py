@@ -158,6 +158,8 @@ def signup():
     form.gender.choices=[("female","female"),("male","male")]
     activity_level_choices= [(al,al) for al in activity_levels]
     form.activity_level.choices=activity_level_choices
+    plan_choices = [(plan,plan) for plan in plans]
+    form.diet_plan.choices=plan_choices
     if form.validate_on_submit():
         try:
             user = User.signup(
