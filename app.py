@@ -10,6 +10,7 @@ from sqlalchemy.sql import func
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql.functions import user
 from wtforms.fields.simple import PasswordField
 
 from models import UserFood, db, connect_db, User, BMI
@@ -83,8 +84,7 @@ def homepage():
     
     if g.user:
          
-        qry = db.session.query(
-                    
+        qry = db.session.query(      
                     UserFood.date.label('date'),
                     func.sum(UserFood.calories).label("total_calories"),
                     ).filter_by(user_id=g.user.id)
@@ -385,11 +385,31 @@ def page_not_found(e):
 @app.route('/food/eat/<int:food_id>',methods=['POST'])
 @login_required
 def add_food(food_id):
+    
     for arr in session["data"]['results']:
         if arr["id"]==food_id:
+            food=arr['title']
             user_food=UserFood(spoon_id=arr["id"],user_id=g.user.id,name=arr["title"],calories=arr["nutrition"]["nutrients"][0]["amount"],img=arr["image"])
             db.session.add(user_food)
             db.session.commit()
-    return redirect("/")
+    flash(f"{food} successfully added","success")
+    return redirect("/food-journal")
 
-  
+@app.route("/food-journal")
+@login_required
+def show_food():
+    data = UserFood.query.filter_by(user_id=g.user.id, date= datetime.utcnow().date())
+    # import pdb;pdb.set_trace()
+    return render_template('users/meals.html', data=data)
+
+@app.route("/user-food/<int:user_food_id>/delete", methods=["POST"])
+@login_required
+def delete_food(user_food_id):
+    food = UserFood.query.get_or_404(user_food_id)
+    if food.user_id!= g.user.id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    db.session.delete(food)
+    db.session.commit()
+    flash(f"{food.name} successfully deleted.", "success")
+    return redirect("/food-journal")
