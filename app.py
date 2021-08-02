@@ -283,7 +283,7 @@ def bmiForm():
         db.session.add(user)
         db.session.commit()
         flash('Plan successfully added/updated','success')
-        return redirect('/plan')
+        return redirect('/')
 
     return render_template('users/bmi.html', form=form)
 
@@ -305,7 +305,6 @@ def bmiForm():
 #     return render_template('users/plan.html', form=form)
 
 @app.route('/food-intake',methods=['GET','POST'])
-@login_required
 def search_food():
     form = FoodIntakeForm()
     if form.validate_on_submit():
@@ -335,7 +334,7 @@ def search_food():
         data['results'][0]["nutrition"]=content["nutrition"]
 
 
-        resp2 = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":3,"apiKey":API_SECRET_KEY})
+        resp2 = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
         data2 = resp2.json() 
 
         data['results'].extend(data2['results'])
