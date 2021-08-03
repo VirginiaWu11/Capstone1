@@ -6,7 +6,7 @@
       <h1>Today's Meals</h1>
       <div class="row mt-3">
         {% if data[0] %} {% for food in data%}
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-6 col-lg-3 mb-3">
           <div class="card h-100">
             <img src="{{food.img}}" class="card-img-top" alt="{{food.title}}" />
             <div class="card-body d-flex flex-column">
@@ -35,7 +35,7 @@
     <br />
     <hr />
     {% if wfood[0] %}
-    <h2>This week's meals</h2>
+    <h2>This Week's Meals</h2>
     <table class="table table-striped table-hover">
       <thead>
         <tr>

@@ -40,3 +40,34 @@
 .card-body {
   background-color: whitesmoke;
 }
+
+.front > header {
+  position: absolute;
+  width: 100%;
+  background: inherit;
+  background-attachment: fixed;
+  overflow: hidden;
+  background-position: center center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+}
+.front > header::before {
+  content: "";
+  position: absolute;
+
+  width: 200%;
+  height: 200%;
+  background: inherit;
+  background-attachment: fixed;
+  -webkit-filter: blur(4px);
+  filter: blur(4px);
+}
+.front > header > div {
+  margin: 0;
+  color: white;
+  position: relative;
+  z-index: 1;
+}

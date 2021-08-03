@@ -1,6 +1,10 @@
 {% extends 'base.html' %} {% block content %}
 <div>
+  {% if g.user %}
   <h1 class="text-center">Log Food</h1>
+  {% else %}
+  <h1 class="text-center">Search Recipes</h1>
+  {% endif %}
   <div class="row justify-content-center mt-3">
     <div>
       <form method="POST">

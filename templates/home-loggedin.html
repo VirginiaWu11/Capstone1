@@ -2,8 +2,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- <div class="home-test">  -->
-  <h1>Status</h1>
-  
+  <h1>{{g.user.username}}'s Progress</h1>
+  <p>Body Mass Index(BMI) is a quick and easy tool to screen for weight categories. It is calculated using a person's height and weight with the formula below: </p>
+  <p> <b>BMI = weight (lb) / [height (in)]<sup>2</sup> x 703</b> </p>
   <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
       <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Weight</button>
@@ -17,6 +18,8 @@
         <div class="card-body">
           <h5 class="card-title">Weight</h5>
           <canvas id="weightLineChart" width="900" height="400"> </canvas>
+          <br>
+          <p>In this section, you will find two line-charts, one for weight, and one for BMI (notice the y-axis). The blue line indicates your current weight, and the pink-dotted lines indicate the ideal-high and ideal-low ranges to meet normal weight. </p>
         </div>
       </div>
       
@@ -26,30 +29,54 @@
         <div class="card-body">
           <h5 class="card-title">BMI</h5>
           <canvas id="BMILineChart" width="900" height="400"> </canvas>
+          <br>
+          <p>In this section, you will find two line-charts, one for weight, and one for BMI (notice the y-axis). The blue line indicates your current weight, and the pink-dotted lines indicate the ideal-high and ideal-low ranges to meet normal weight. </p>
         </div>
       </div>
        
     </div>
   </div>
+  <!-- <p>In the above section, you will find two line-charts, one for weight, and one for BMI (notice the y-axis). The blue line indicates your current weight, and the pink-dotted lines indicate the ideal-high and ideal-low ranges to meet normal weight. </p> -->
   <br>
+  <div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        More information on calories burnt calculation
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <p> First, your Basal Metabolic Rate(BMR), the number of calories your body needs to function at rest, is calculated.
+          <ul><li>For Females: BMR = 655.1 + (4.35 x weight) + (4.7 x height) – (4.7 x age)</li>
+          <li>
+            For Males: BMR = 66 + (6.2 x weight) + (12.7 x height) – (6.76 x age)
+          </li></ul>
+        </p>
+        <p>Next, your activity level [current: {{g.user.activity_level}}] is identified with a number.
+          <ul>
+            <li>1.2, or sedentary (little to no exercise)</li>
+            <li>1.375, or lightly active (light exercise 1–3 days per week)</li>
+            <li>1.55, or moderately active (moderate exercise 3–5 days per week)</li>
+            <li>1.725, or very active (hard exercise 6–7 days per week)</li>
+            <li>1.9, or extra active (very hard exercise, training, or a physical job)</li>
+          </ul>
+        </p>
+        <p>Finally, the amount of calories burnt is calculated by multiplying the Acitivity level by the BMR.</p>
+      </div>
+    </div>
+  </div>
   <div class="card" >
     <div class="card-body">
       <h5 class="card-title">Calories</h5>
       <canvas id="caloriesInLineChart" width="900" height="400"> </canvas>
+      <br>
+      <p>Calories really do matter. The blue bars represent the amount of calories intake logged per day. The red bars, utilizing the Harris-Benedict's formula, represent the average amount of calories burnt based on your height, weight, gender, age and activity level. The pink-dotted line represents amount of calories to intake in order to reach your selected goal of <b>"{{g.user.diet_plan}}".</b> </p>
+      
     </div>
   </div>
-  
-
-
-  
-  
-  <!-- <h3>calories in</h3>
-  <canvas id="caloriesInLineChart" width="900" height="400"> </canvas> -->
-
-  <!-- <h3>BMI</h3>
-  <canvas id="BMILineChart" width="900" height="400"> </canvas>
-  <h3>Weight</h3>
-  <canvas id="weightLineChart" width="900" height="400"> </canvas> -->
+  <br>
+ 
   <script>
     let ctx = document.getElementById("caloriesInLineChart").getContext("2d");
     let caloriesInLineChart = new Chart(ctx,{
@@ -63,7 +90,6 @@
             data:{{values | safe}},
             fill: true,
             borderColor:"rgb(0,192,255)",
-            // color:"rgb(75,192,192)",
             backgroundColor: "rgba(0,192,255,.5)",
           },
           {
@@ -71,7 +97,6 @@
             data:{{values7 | safe}},
             fill: true,
             borderColor:"rgb(0,192,255)",
-            // color:"rgb(75,192,192)",
             backgroundColor: "rgba(255,0,100,.5)",
           },
           {
@@ -80,21 +105,11 @@
             borderDash: [5, 5],
             borderColor:"rgb(255,0,192)",
             type: 'line',
-            // order: 0
           }
         ]
       },
       option:{
         responsive: false,
-        // plugins: {
-        //   legend: {
-        //     position: 'top',
-        //   },
-        //   title: {
-        //     display: true,
-        //     text: 'Line Chart'
-        //   }
-        // }
       }
 
     });
@@ -103,15 +118,7 @@
       type:"line",
       data:{
         labels:{{ labels1 | safe}},
-        // weight: [
-        //   {
-        //     label: "weight",
-        //     data:{{values2 | safe}},
-        //     fill: false,
-        //     borderColor:"rgb(0,192,255)",
 
-        //   },
-        // ]
 
         datasets:[
           {
@@ -137,25 +144,7 @@
           },
         ]
       },
-      options:{
-        // responsive: false,
-        // plugins:{
-        //   tooltip: {
-        //     callbacks: {
-        //       label: function(tooltipItem,data){
-        //         console.log(tooltipItem)
-        //         console.log(data)
-        //         // let label = BMILineChart.data.labels[tooltipItem.dataIndex];
-        //         let label = tooltipItem.dataset.label;
-        //         let value = BMILineChart.data.datasets[tooltipItem.datasetIndex].data[tooltipItem.dataIndex];
-        //         let label1 = "Weight";
-        //         let value1 = BMILineChart.data.weight[tooltipItem.datasetIndex].data[tooltipItem.dataIndex];
-        //         return label + ": hey" + value +label1 + value1;
-        //       }
-        //     }
-        //   }
-        // }
-      },
+
       
     });
     let weightC = document.getElementById("weightLineChart").getContext("2d");
@@ -188,8 +177,6 @@
             data:{{values6 | safe}},
             fill: false,
             borderColor:"rgb(255,0,192)",
-
-
           },
         ]
       },
