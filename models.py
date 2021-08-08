@@ -155,7 +155,7 @@ class UserFood(db.Model):
         db.Text,
         default="/static/images/w-logo.png"
     )
-
+    
 
 
 

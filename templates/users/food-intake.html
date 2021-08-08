@@ -12,9 +12,8 @@
         <div class="form-group">
           {% for field in form if field.widget.input_type != 'hidden'%}
           <p>
-            {{field.label(class_="form-label")}}
-            {{field(class_="form-control")}} {% for err in field.errors %}
-            {{err}} {% endfor %}
+            {{ field(placeholder="e.g. Banana Bread", class="form-control") }}{%
+            for err in field.errors %} {{err}} {% endfor %}
           </p>
           {% endfor %}
           <button class="btn btn-primary">Search</button>
@@ -66,7 +65,7 @@
 
         <div>
           <h2 class="text-muted">
-            Search recipies to be added to today's food intake
+            Search recipies to be added to today's food intake {{var}}
           </h2>
         </div>
         {% endif %}
