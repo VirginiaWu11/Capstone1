@@ -88,10 +88,10 @@ def homepage():
                     UserFood.date.label('date'),
                     func.sum(UserFood.calories).label("total_calories"),
                     ).filter_by(user_id=g.user.id)
-        qry = qry.group_by(UserFood.date)
+        qry = qry.group_by(UserFood.date).order_by(UserFood.date.desc())
 
-        data = [res for res in qry.all()]
-        # print("*****************",dat)
+        data = [res for res in qry.limit(7).all()]
+        print("*****************",data)
         data=[(t[0].strftime('%m/%d/%Y'),t[1]) for t in data]
         data.sort()
         
@@ -113,10 +113,10 @@ def homepage():
         # # BMI.weight
         # )
 
-        qry1 = BMI.query.filter_by(user_id=g.user.id)
+        qry1 = BMI.query.order_by(BMI.date.desc()).filter_by(user_id=g.user.id)
 
 
-        data1 = [(res.date,res.bmi, res.weight) for res in qry1.all()]
+        data1 = [(res.date,res.bmi, res.weight) for res in qry1.limit(7).all()]
         print("*****************",data1)
         height = int(g.user.height)
 
