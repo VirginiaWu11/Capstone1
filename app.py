@@ -311,15 +311,17 @@ def bmiForm():
 @app.route('/food-intake',methods=['GET','POST'])
 def search_food():
     form = FoodIntakeForm()
+    no_result="Search recipes here."
     if form.validate_on_submit():
         search = form.search.data
         resp = requests.get('https://api.spoonacular.com/food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
-       
-        data=resp.json()
-        food_id= data['results'][0]['id']
-        name=data['results'][0]['name']
         
-
+        data=resp.json()
+        try:
+            food_id= data['results'][0]['id']
+        except IndexError:
+            flash(f'API: "{search}" not found.', 'danger')
+            return redirect("/food-intake")
         imge = data['results'][0]['image']
         img_url= "https://spoonacular.com/cdn/ingredients_100x100/"+imge
         
@@ -343,9 +345,8 @@ def search_food():
 
         data['results'].extend(data2['results'])
         session["data"] = data
-
         return render_template('users/food-intake.html', form=form, data=data)
-    return render_template('users/food-intake.html', form=form)
+    return render_template('users/food-intake.html', form=form,no_result=no_result)
 
 
 @app.route('/recipes',methods=['GET','POST'])
@@ -363,16 +364,19 @@ def search_recipes():
 
 @app.route('/recipes/<int:food_id>',methods=['GET'])
 def show_recipe(food_id):
+    for r in session['data']['results']:  
+        if r['id'] == food_id:
+            no_result = f"API error: {r['title']} recipe card not found"
     
     resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/card',params={"apiKey":API_SECRET_KEY})
     data = resp.json()
-    # import pdb;pdb.set_trace()
     print("*************************", data)
     try:
         url=data['url']
         return render_template("recipe-card.html",url=url)  
     except KeyError:
-        return render_template('404.html'), 404
+        flash(f"{no_result}","danger")
+        return redirect('/food-intake')
 
 
 
