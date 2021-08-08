@@ -255,11 +255,8 @@ def bmiForm():
     if form.validate_on_submit():
         height = BMI.cal_height_inches(form.height.data)
         weight = form.weight.data
-        try:
-            bmi =  BMI.calculate_BMI(height,weight)
-        except TypeError:
-            flash("Please provide height in feet'inches format; e.g. 5'4","danger")
-            return redirect("/bmi")
+        bmi =  BMI.calculate_BMI(height,weight)
+        
         bmi_cat = BMI.BMI_range(bmi)
         lbs_away = BMI.lbs_away(bmi,height,weight)
 
