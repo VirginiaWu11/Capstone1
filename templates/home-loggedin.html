@@ -30,7 +30,7 @@
           <h5 class="card-title">BMI</h5>
           <canvas id="BMILineChart" width="900" height="400"> </canvas>
           <br>
-          <p>In this section, you will find two line-charts, one for weight, and one for BMI (notice the y-axis). The blue line indicates your current weight, and the pink-dotted lines indicate the ideal-high and ideal-low ranges to meet normal weight. </p>
+          <p>In this section, you will find two line-charts, one for weight, and one for BMI (notice the y-axis). The blue line indicates your current weight, and the pink-dotted lines indicate the ideal-high and ideal-low ranges to meet normal weight/BMI. </p>
         </div>
       </div>
        
@@ -47,13 +47,13 @@
     </h2>
     <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
       <div class="accordion-body">
-        <p> First, your Basal Metabolic Rate(BMR), the number of calories your body needs to function at rest, is calculated.
+        <p> First, your Basal Metabolic Rate(BMR) is calculated; this is the number of calories your body needs to function at rest.
           <ul><li>For Females: BMR = 655.1 + (4.35 x weight) + (4.7 x height) – (4.7 x age)</li>
           <li>
             For Males: BMR = 66 + (6.2 x weight) + (12.7 x height) – (6.76 x age)
           </li></ul>
         </p>
-        <p>Next, your activity level [current: {{g.user.activity_level}}] is identified with a number.
+        <p>Next, your activity level is identified with a number.[current: {{g.user.activity_level}}]
           <ul>
             <li>1.2, or sedentary (little to no exercise)</li>
             <li>1.375, or lightly active (light exercise 1–3 days per week)</li>
@@ -71,7 +71,7 @@
       <h5 class="card-title">Calories</h5>
       <canvas id="caloriesInLineChart" width="900" height="400"> </canvas>
       <br>
-      <p>Calories really do matter. The blue bars represent the amount of calories intake logged per day. The red bars, utilizing the Harris-Benedict's formula, represent the average amount of calories burnt based on your height, weight, gender, age and activity level. The pink-dotted line represents amount of calories to intake in order to reach your selected goal of <b>"{{g.user.diet_plan}}".</b> </p>
+      <p>Calories really do matter. The blue bars represent the amount of calories intake logged per day. The red bars, utilizing the Harris-Benedict's formula, represent the average amount of calories burnt based on your height, weight, gender, age and activity level. The pink-dotted line represent amount of calories to consume in order to reach your selected goal of <b>"{{g.user.diet_plan}}."</b> </p>
       
     </div>
   </div>
