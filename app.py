@@ -180,6 +180,13 @@ def signup():
             return render_template('users/signup.html', form=form)
 
         keep_login(user)
+        height = BMI.cal_height_inches(form.height.data)
+        weight = form.weight.data
+        bmi =  BMI.calculate_BMI(height,weight)
+        add_bmi = BMI(bmi=bmi, weight=form.weight.data, user_id=user.id)
+        db.session.add_all([add_bmi])
+        
+        db.session.commit()
 
         return redirect("/")
 
@@ -235,6 +242,20 @@ def edit_profile():
             user.age=form.age.data,
             user.activity_level=form.activity_level.data,
             user.diet_plan=form.diet_plan.data
+
+            height = BMI.cal_height_inches(form.height.data)
+            weight = form.weight.data
+            bmi =  BMI.calculate_BMI(height,weight)
+            b = db.session.query(BMI).filter(BMI.user_id==g.user.id,BMI.date==datetime.utcnow().date()).first()
+            if not b:
+                add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
+                db.session.add_all([user,add_bmi])
+            else:
+                b.bmi=bmi
+                b.weight=weight
+                db.session.add_all([user,b])
+
+
             db.session.commit()
             flash("User profile successfully updated","success")
             return redirect("/")
