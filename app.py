@@ -91,33 +91,18 @@ def homepage():
         qry = qry.group_by(UserFood.date).order_by(UserFood.date.desc())
 
         data = [res for res in qry.limit(7).all()]
-        print("*****************",data)
         data=[(t[0].strftime('%m/%d/%Y'),t[1]) for t in data]
         data.sort()
         
 
-        # import pdb;pdb.set_trace()
         labels = [row[0] for row in data]
         values = [row[1] for row in data]
         
-
-        # qry1 = db.session.query(
-                    
-        #             # BMI.date.label('date'),
-        #             func.max(BMI.date).label("date"),
-        #             BMI.bmi.label("BMI"),
-        #             # BMI.weight.label("weight")
-                   
-        #             ).filter_by(user_id=g.user.id)
-        # qry1 = qry1.group_by(BMI.bmi, 
-        # # BMI.weight
-        # )
 
         qry1 = BMI.query.order_by(BMI.date.desc()).filter_by(user_id=g.user.id)
 
 
         data1 = [(res.date,res.bmi, res.weight) for res in qry1.limit(7).all()]
-        print("*****************",data1)
         height = int(g.user.height)
 
         
@@ -125,7 +110,6 @@ def homepage():
         data1=[(t[0].strftime('%m/%d/%Y'),t[1],t[2],18.5,24.9,int(18.01*((height)**2)/703),int(25*((height)**2)/703)) for t in data1]
         data1.sort()
             
-        # import pdb;pdb.set_trace()
         labels1 = [row[0] for row in data1]
         values1 = [row[1] for row in data1]
         values2 = [row[2] for row in data1]
@@ -138,7 +122,6 @@ def homepage():
 
         #### Goal Calories In
         values8 = [c_out+plans[g.user.diet_plan] for c_out in values7]
-        # import pdb;pdb.set_trace()
         return render_template('home-loggedin.html',labels=labels, values=values, labels1=labels1, values1=values1,values2=values2, values3=values3,values4=values4, values5=values5,values6=values6,
         values7=values7,values8=values8)
         
@@ -313,23 +296,6 @@ def bmiForm():
 
     return render_template('users/bmi.html', form=form)
 
-
-# @app.route('/plan',methods=['GET','POST'])
-# @login_required
-# def handle_plan():
-
-#     form= PlanForm()
-#     plan_choices = [(plan,plan) for plan in plans]
-#     form.plan.choices=plan_choices
-#     if form.validate_on_submit():
-#         user = g.user
-#         user.diet_plan=form.plan.data
-#         db.session.add(user)
-#         db.session.commit()
-#         flash('plan successfully added/updated')
-#         return redirect('/')
-#     return render_template('users/plan.html', form=form)
-
 @app.route('/food-intake',methods=['GET','POST'])
 def search_food():
     form = FoodIntakeForm()
@@ -392,7 +358,6 @@ def show_recipe(food_id):
     
     resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/card',params={"apiKey":API_SECRET_KEY})
     data = resp.json()
-    print("*************************", data)
     try:
         url=data['url']
         return render_template("recipe-card.html",url=url)  
@@ -428,7 +393,6 @@ def show_food():
     current_date = datetime.utcnow().date()
     one_week_ago= current_date - timedelta(weeks=1)
     food_within_the_last_week = UserFood.query.filter(UserFood.user_id==g.user.id,UserFood.date>one_week_ago).all()
-    # import pdb;pdb.set_trace()
 
     return render_template('users/meals.html', data=data, wfood=food_within_the_last_week)
 
