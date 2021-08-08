@@ -19,7 +19,8 @@
             </div>
           </form>
           <p>
-            {% if bmi %}Your BMI and Weight charts have been updated.
+            {% if bmi %}{% if g.user %}Your BMI and Weight charts have been
+            updated.{% endif %}
             <br />Your BMI is {{bmi}}, in the {{bmi_cat}} range {% if lbs_away
             %} and {{lbs_away}} pounds away from reaching the Normal range. {%
             endif %}{% endif %}
