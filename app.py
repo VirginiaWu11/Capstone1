@@ -4,7 +4,7 @@ import json
 
 from datetime import datetime, timedelta
 from functools import wraps
-# from secrets import API_SECRET_KEY
+from secrets import API_SECRET_KEY
 from sqlalchemy.sql import func
 
 from flask import Flask, render_template, request, flash, redirect, session, g
@@ -22,8 +22,8 @@ CURR_USER_KEY = "curr_user"
 app = Flask(__name__)
 
 API_SECRET_KEY = os.environ.get("API_SECRET_KEY")
-# app.config['SQLALCHEMY_DATABASE_URI'] = (
-#     os.environ.get('DATABASE_URL', 'postgres:///capstone1'))
+# app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1'
+#
 uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
 if uri.startswith("postgres://"):
     uri=uri.replace('postgres://','postgresql://')
@@ -127,8 +127,14 @@ def homepage():
 
         #### Goal Calories In
         values8 = [c_out+plans[g.user.diet_plan] for c_out in values7]
+
+        last_date = labels1[-1]
+    
+        high=values6[-1]
+        low=values5[-1]
+       
         return render_template('home-loggedin.html',labels=labels, values=values, labels1=labels1, values1=values1,values2=values2, values3=values3,values4=values4, values5=values5,values6=values6,
-        values7=values7,values8=values8)
+        values7=values7,values8=values8, last_date=last_date,high=high,low=low)
         
 
     
