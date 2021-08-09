@@ -7,7 +7,7 @@ db.drop_all()
 db.create_all()
 
 user = User(
-    username="123abc",
+    username="User1",
     password="$2b$12$fSlKmZ/ord1cMM3cTl18zuZw7yNtGuMlJukeyrX8N95WSsbKo/cdy",
     weight = 150,
     height = 64,
