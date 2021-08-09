@@ -4,7 +4,7 @@ import json
 
 from datetime import datetime, timedelta
 from functools import wraps
-from secrets import API_SECRET_KEY
+# from secrets import API_SECRET_KEY
 from sqlalchemy.sql import func
 
 from flask import Flask, render_template, request, flash, redirect, session, g
@@ -21,6 +21,7 @@ CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
+API_SECRET_KEY = os.environ.get("API_SECRET_KEY")
 # app.config['SQLALCHEMY_DATABASE_URI'] = (
 #     os.environ.get('DATABASE_URL', 'postgres:///capstone1'))
 uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
