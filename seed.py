@@ -19,25 +19,25 @@ user = User(
 bmi1 = BMI(
     weight = 155,
     bmi=round(703*155/((64)**2),2),
-    date= '2021-07-01',
+    date= '2021-08-01',
     user_id = 1
 )
 bmi2 = BMI(
     weight = 153,
     bmi=round(703*153/((64)**2),2),
-    date= '2021-07-02',
+    date= '2021-08-02',
     user_id = 1
 )
 bmi3 = BMI(
     weight = 145,
     bmi=round(703*145/((64)**2),2),
-    date= '2021-07-03',
+    date= '2021-08-04',
     user_id = 1
 )
 bmi4 = BMI(
-    weight = 145,
-    bmi=round(703*145/((64)**2),2),
-    date= '2021-07-18',
+    weight = 142,
+    bmi=round(703*142/((64)**2),2),
+    date= '2021-08-07',
     user_id = 1
 )
 
@@ -69,7 +69,7 @@ user_food3 = UserFood(
 user_food4 = UserFood(
     spoon_id = 642240,
     user_id = 1,
-    date = "2021-07-11",
+    date = "2021-08-03",
     name = "Egg Salad Sandwiches With Tarragon",
     calories = 274,
     img = "https://spoonacular.com/recipeImages/642240-312x231.jpg"
@@ -77,7 +77,7 @@ user_food4 = UserFood(
 user_food5 = UserFood(
     spoon_id = 642240,
     user_id = 1,
-    date = "2021-07-12",
+    date = "2021-08-03",
     name = "Egg Salad Sandwiches With Tarragon",
     calories = 274,
     img = "https://spoonacular.com/recipeImages/642240-312x231.jpg"
@@ -85,7 +85,7 @@ user_food5 = UserFood(
 user_food6 = UserFood(
     spoon_id = 1096010,
     user_id = 1,
-    date = "2021-07-13",
+    date = "2021-08-04",
     name = "Egg Salad Wrap",
     calories = 570,
     img = "https://spoonacular.com/recipeImages/1096010-312x231.jpg"
@@ -93,7 +93,7 @@ user_food6 = UserFood(
 user_food7 = UserFood(
     spoon_id = 1096010,
     user_id = 1,
-    date = "2021-07-14",
+    date = "2021-08-05",
     name = "Egg Salad Wrap",
     calories = 570,
     img = "https://spoonacular.com/recipeImages/1096010-312x231.jpg"
@@ -101,15 +101,47 @@ user_food7 = UserFood(
 user_food8 = UserFood(
     spoon_id = 1096010,
     user_id = 1,
-    date = "2021-07-14",
+    date = "2021-08-05",
     name = "Egg Salad Wrap",
     calories = 570,
     img = "https://spoonacular.com/recipeImages/1096010-312x231.jpg"
+)
+user_food9 = UserFood(
+    spoon_id = 1096010,
+    user_id = 1,
+    date = "2021-08-07",
+    name = "Egg Salad Wrap",
+    calories = 570,
+    img = "https://spoonacular.com/recipeImages/1096010-312x231.jpg"
+)
+user_food10 = UserFood(
+    spoon_id = 642240,
+    user_id = 1,
+    date = "2021-08-07",
+    name = "Egg Salad Sandwiches With Tarragon",
+    calories = 274,
+    img = "https://spoonacular.com/recipeImages/642240-312x231.jpg"
+)
+user_food11 = UserFood(
+    spoon_id = 642240,
+    user_id = 1,
+    date = "2021-08-07",
+    name = "Egg Salad Sandwiches With Tarragon",
+    calories = 274,
+    img = "https://spoonacular.com/recipeImages/642240-312x231.jpg"
+)
+user_food12 = UserFood(
+    spoon_id = 634006,
+    user_id = 1,
+    date = "2021-08-07",
+    name = "Banana Bread",
+    calories = 579,
+    img = "https://spoonacular.com/recipeImages/634006-312x231.jpg"
 )
 
 
 
 db.session.add_all([user,bmi1,bmi2,bmi3, bmi4])
 db.session.commit()
-db.session.add_all([user_food1,user_food2,user_food3,user_food4,user_food5,user_food6,user_food7,user_food8])
+db.session.add_all([user_food1,user_food2,user_food3,user_food4,user_food5,user_food6,user_food7,user_food8,user_food9,user_food10,user_food11,user_food12])
 db.session.commit()
