@@ -1,51 +1,53 @@
 {% extends 'base.html' %} {% block content %}
-<div class="home-loggedout">
-  <div class="card">
-    <div class="card-body">
-      <h1 class="text-center">Calculate your BMI</h1>
-      <div class="row justify-content-center">
-        <div>
-          <form method="POST">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-              {% for field in form if field.widget.input_type != 'hidden'%}
-              <p>
-                {{field.label(class_="form-label")}}
-                {{field(class_="form-control")}} {% for err in field.errors %}
-                {{err}} {% endfor %}
-              </p>
-              {% endfor %}
-              <button class="btn btn-primary">Calculate</button>
-            </div>
-          </form>
-          <p>
-            {% if bmi %}{% if g.user %}Your BMI and Weight charts have been
-            updated.{% endif %}
-            <br />Your BMI is {{bmi}}, in the {{bmi_cat}} range {% if lbs_away
-            %} and {{lbs_away}} pounds away from reaching the Normal range. {%
-            endif %}{% endif %}
-          </p>
-        </div>
-        <div>
-          {% if bmi and g.user %}
-          <form method="POST">
-            {{ plan_form.hidden_tag() }}
-            <div class="form-group">
-              {% for field in plan_form if field.widget.input_type != 'hidden'%}
-              <p>
-                {{field.label(class_="form-label")}}
-                {{field(class_="form-control")}} {% for err in field.errors %}
-                {{err}} {% endfor %}
-              </p>
-              {% endfor %}
-              <button class="btn btn-primary">Update</button>
-            </div>
-          </form>
-          {% endif %}
+<div class="container">
+  <div class="home-loggedout">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="text-center">Calculate your BMI</h1>
+        <div class="row justify-content-center">
+          <div>
+            <form method="POST">
+              {{ form.hidden_tag() }}
+              <div class="form-group">
+                {% for field in form if field.widget.input_type != 'hidden'%}
+                <p>
+                  {{field.label(class_="form-label")}}
+                  {{field(class_="form-control")}} {% for err in field.errors %}
+                  {{err}} {% endfor %}
+                </p>
+                {% endfor %}
+                <button class="btn btn-primary">Calculate</button>
+              </div>
+            </form>
+            <p>
+              {% if bmi %}{% if g.user %}Your BMI and Weight charts have been
+              updated.{% endif %}
+              <br />Your BMI is {{bmi}}, in the {{bmi_cat}} range {% if lbs_away
+              %} and {{lbs_away}} pounds away from reaching the Normal range. {%
+              endif %}{% endif %}
+            </p>
+          </div>
+          <div>
+            {% if bmi and g.user %}
+            <form method="POST">
+              {{ plan_form.hidden_tag() }}
+              <div class="form-group">
+                {% for field in plan_form if field.widget.input_type !=
+                'hidden'%}
+                <p>
+                  {{field.label(class_="form-label")}}
+                  {{field(class_="form-control")}} {% for err in field.errors %}
+                  {{err}} {% endfor %}
+                </p>
+                {% endfor %}
+                <button class="btn btn-primary">Update</button>
+              </div>
+            </form>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
 {% endblock %}

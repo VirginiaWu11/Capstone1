@@ -98,6 +98,7 @@ class User(db.Model):
         db.session.commit()
         return user
 
+
     @classmethod
     def authenticate(cls, username, password):
         """Find user with `username` and `password`.

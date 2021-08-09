@@ -75,11 +75,20 @@
         </div>
       </div>
     </nav>
-    <div class="container">
+    <div>
       {% for category, message in get_flashed_messages(with_categories=True) %}
       <div class="alert alert-{{ category }} py-1">{{ message }}</div>
       {% endfor %}{% block content %} {% endblock %}
     </div>
+    <br />
+    <footer class="footer">
+      <div class="container text-center text-muted">
+        Virginia Wu, 2021
+        <a href="https://github.com/VirginiaWu11/Capstone1" target="_blank"
+          ><i class="fab fa-github text-primary"></i
+        ></a>
+      </div>
+    </footer>
     <script src="https://unpkg.com/jquery"></script>
     <script src="https://unpkg.com/popper"></script>
     <script src="https://unpkg.com/bootstrap"></script>
