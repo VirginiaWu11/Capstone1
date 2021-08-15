@@ -84,14 +84,14 @@ def homepage():
     # django: query.values_list('date', 'amount') => [(date_1, amount_1), (date_2, amount_2)]
     # Example shape of the last_7_user_food_query: [sqlalchemy.util._collections.result((datetime.date(2021, 8, 7), 1697)), sqlalchemy.util._collections.result((datetime.date(2021, 8, 5), 1140)), sqlalchemy.util._collections.result((datetime.date(2021, 8, 4), 570)), sqlalchemy.util._collections.result((datetime.date(2021, 8, 3), 548)), sqlalchemy.util._collections.result((datetime.date(2021, 7, 10), 1118))]
 
-    data = [(t[0].strftime('%m/%d/%Y'),t[1]) for t in last_7_user_food_query]
-    # Example shape of the data: [('08/07/2021', 1697), ('08/05/2021', 1140), ('08/04/2021', 570), ('08/03/2021', 548), ('07/10/2021', 1118)]
+    last_7_user_food_data = [(t[0].strftime('%m/%d/%Y'),t[1]) for t in last_7_user_food_query]
+    # Example shape of the last_7_user_food_data: [('08/07/2021', 1697), ('08/05/2021', 1140), ('08/04/2021', 570), ('08/03/2021', 548), ('07/10/2021', 1118)]
     
     # sort by date ascending order
-    data.sort()
-    # Example shape of the data: [('07/10/2021', 1118), ('08/03/2021', 548), ('08/04/2021', 570), ('08/05/2021', 1140), ('08/07/2021', 1697)]
+    last_7_user_food_data.sort()
+    # Example shape of the last_7_user_food_data: [('07/10/2021', 1118), ('08/03/2021', 548), ('08/04/2021', 570), ('08/05/2021', 1140), ('08/07/2021', 1697)]
     user_food_dates, user_food_calories = [], []
-    for row in data:
+    for row in last_7_user_food_data:
         user_food_dates.append(row[0])
         user_food_calories.append(row[1]) 
     
@@ -211,7 +211,6 @@ def edit_profile():
     if not form.validate_on_submit():
         return render_template('users/edit.html', form=form, user_id=user.id)
 
-
     if User.authenticate(user.username, form.password.data):
         user.username = form.username.data,
         user.weight = form.weight.data,
@@ -233,7 +232,6 @@ def edit_profile():
             b.bmi=bmi
             b.weight=weight
             db.session.add_all([user,b])
-
 
         db.session.commit()
         flash("User profile successfully updated","success")
@@ -275,7 +273,6 @@ def bmi_form():
             db.session.commit()
             return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat,lbs_away=lbs_away,plan_form=plan_form)
 
-
         return render_template('users/bmi.html', form=form,bmi=bmi,bmi_cat=bmi_cat,lbs_away=lbs_away)
 
     if plan_form.validate_on_submit():
@@ -292,43 +289,42 @@ def bmi_form():
 def search_food():
     form = FoodIntakeForm()
     no_result="Search recipes here."
-    if form.validate_on_submit():
-        search = form.search.data
-        # Base URL constant added
-        ingredients_resp = requests.get(BASE_API_URL+'food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
-        
-        ingredients_data=ingredients_resp.json()
-        try:
-            food_id= ingredients_data['results'][0]['id']
-        except IndexError:
-            flash(f'API: "{search}" not found.', 'danger')
-            return redirect("/food-intake")
-        imge = ingredients_data['results'][0]['image']
-        img_url= "https://spoonacular.com/cdn/ingredients_100x100/"+imge
-        
+    if not form.validate_on_submit():
+        return render_template('users/food-intake.html', form=form,no_result=no_result)
 
-        
-        
-        ingredients_data['results'][0]['image'] = img_url
-        ingredients_data['results'][0]['title']=ingredients_data['results'][0]['name']
+    search = form.search.data
+    # Base URL constant added
+    ingredients_resp = requests.get(BASE_API_URL+'food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
+    
+    ingredients_data=ingredients_resp.json()
+    try:
+        food_id= ingredients_data['results'][0]['id']
+    except IndexError:
+        flash(f'API: "{search}" not found.', 'danger')
+        return redirect("/food-intake")
+    imge = ingredients_data['results'][0]['image']
+    img_url= "https://spoonacular.com/cdn/ingredients_100x100/"+imge
+    
+    ingredients_data['results'][0]['image'] = img_url
+    ingredients_data['results'][0]['title']=ingredients_data['results'][0]['name']
 
-        cal_resp = requests.get(BASE_API_URL+f'food/ingredients/{food_id}/information',params={"amount": 1,"apiKey":API_SECRET_KEY})
-        content = cal_resp.json()
-        for obj in content["nutrition"]["nutrients"]:
-            if obj["title"]=="Calories":
-                content["nutrition"]["nutrients"][0]=obj
+    ingredients_calories_resp = requests.get(BASE_API_URL+f'food/ingredients/{food_id}/information',params={"amount": 1,"apiKey":API_SECRET_KEY})
+    ingredients_calories_content = ingredients_calories_resp.json()
+    # Example shape of the ingredients_calories_content: {'id': 9040, 'original': 'ripe bananas', 'originalName': 'ripe bananas', 'name': 'ripe bananas', 'amount': 1.0, 'unit': '', 'unitShort': '', 'unitLong': '', 'possibleUnits': ['small', 'large', 'piece', 'slice', 'g', 'extra small', 'medium', 'oz',   ], 'estimatedCost': {'value': 15.73, 'unit': 'US Cents'}, 'consistency': 'solid', 'shoppingListUnits': ['pieces'], 'aisle': 'Produce', 'image': 'bananas.jpg', 'meta': [], 'nutrition': {'nutrients': [{'title': 'Iron', 'name': 'Iron', 'amount': 0.31, 'unit': 'mg'}, {'title': 'Phosphorus', 'name': 'Phosphorus', 'amount': 25.96, 'unit': 'mg'}, {'title': 'Vitamin B3', 'name': 'Vitamin B3', 'amount': 0.78, 'unit': 'mg'}, {'title': 'Mono Unsaturated Fat', 'name': 'Mono Unsaturated Fat', 'amount': 0.04, 'unit': 'g'}, {'title': 'Manganese', 'name': 'Manganese', 'amount': 0.32, 'unit': 'mg'}, {'title': 'Vitamin D', 'name': 'Vitamin D', 'amount': 0.0, 'unit': 'µg'}, {'title': 'Folic Acid', 'name': 'Folic Acid', 'amount': 0.0, 'unit': 'µg'}, {'title': 'Vitamin C', 'name': 'Vitamin C', 'amount': 10.27, 'unit': 'mg'},   ], 'properties': [{'name': 'Glycemic Index', 'title': 'Glycemic Index', 'amount': 54.78, 'unit': ''}, {'name': 'Glycemic Load', 'title': 'Glycemic Load', 'amount': 13.08, 'unit': ''}], 'flavonoids': [{'name': 'Cyanidin', 'title': 'Cyanidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Petunidin', 'title': 'Petunidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Delphinidin', 'title': 'Delphinidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Malvidin', 'title': 'Malvidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Pelargonidin', 'title': 'Pelargonidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Peonidin', 'title': 'Peonidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Catechin', 'title': 'Catechin', 'amount': 7.2, 'unit': 'mg'}, {'name': 'Epigallocatechin', 'title': 'Epigallocatechin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Epicatechin', 'title': 'Epicatechin', 'amount': 0.02, 'unit': 'mg'}, {'name': 'Epicatechin 3-gallate', 'title': 'Epicatechin 3-gallate', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Epigallocatechin 3-gallate', 'title': 'Epigallocatechin 3-gallate', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Theaflavin', 'title': 'Theaflavin', 'amount': 0.0, 'unit': ''}, {'name': 'Thearubigins', 'title': 'Thearubigins', 'amount': 0.0, 'unit': ''}, {'name': 'Eriodictyol', 'title': 'Eriodictyol', 'amount': 0.0, 'unit': ''}, {'name': 'Hesperetin', 'title': 'Hesperetin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Naringenin', 'title': 'Naringenin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Apigenin', 'title': 'Apigenin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Luteolin', 'title': 'Luteolin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Isorhamnetin', 'title': 'Isorhamnetin', 'amount': 0.0, 'unit': ''}, {'name': 'Kaempferol', 'title': 'Kaempferol', 'amount': 0.13, 'unit': 'mg'}, {'name': 'Myricetin', 'title': 'Myricetin', 'amount': 0.01, 'unit': 'mg'}, {'name': 'Quercetin', 'title': 'Quercetin', 'amount': 0.07, 'unit': 'mg'}, {'name': "Theaflavin-3,3'-digallate", 'title': "Theaflavin-3,3'-digallate", 'amount': 0.0, 'unit': ''}, {'name': "Theaflavin-3'-gallate", 'title': "Theaflavin-3'-gallate", 'amount': 0.0, 'unit': ''}, {'name': 'Theaflavin-3-gallate', 'title': 'Theaflavin-3-gallate', 'amount': 0.0, 'unit': ''}, {'name': 'Gallocatechin', 'title': 'Gallocatechin', 'amount': 0.0, 'unit': 'mg'}  ], 'caloricBreakdown': {'percentProtein': 4.42, 'percentFat': 3.01, 'percentCarbs': 92.57}, 'weightPerServing': {'amount': 118, 'unit': 'g'}  }, 'categoryPath': ['banana', 'tropical fruit', 'fruit']  }
+    
+    for obj in ingredients_calories_content["nutrition"]["nutrients"]:
+        if obj["title"]=="Calories":
+            ingredients_calories_content["nutrition"]["nutrients"][0]=obj
 
-        ingredients_data['results'][0]["nutrition"]=content["nutrition"]
+    ingredients_data['results'][0]["nutrition"]=ingredients_calories_content["nutrition"]
 
+    recipes_resp = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
+    recipes_data = recipes_resp.json() 
 
-        recipes_resp = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
-        recipes_data = recipes_resp.json() 
-
-        ingredients_data['results'].extend(recipes_data['results'])
-        session["data"] = ingredients_data
-        return render_template('users/food-intake.html', form=form, ingredients_data=ingredients_data)
-    return render_template('users/food-intake.html', form=form,no_result=no_result)
-
+    ingredients_data['results'].extend(recipes_data['results'])
+    session["data"] = ingredients_data
+    return render_template('users/food-intake.html', form=form, ingredients_data=ingredients_data)
+    
 
 @app.route('/recipes',methods=['GET','POST'])
 def search_recipes():
@@ -341,7 +337,6 @@ def search_recipes():
 
         return render_template('recipes.html', form=form, data=data)
     return render_template('recipes.html', form=form)
-
 
 @app.route('/recipes/<int:food_id>',methods=['GET'])
 def show_recipe(food_id):
