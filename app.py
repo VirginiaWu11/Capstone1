@@ -25,13 +25,13 @@ app = Flask(__name__)
 API_SECRET_KEY = os.environ.get("API_SECRET_KEY")
 
 # to use in local environment, comment out
-from secrets import API_SECRET_KEY
-app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1'
+# from secrets import API_SECRET_KEY
+# app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1'
 
-# uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
-# if uri.startswith("postgres://"):
-#     uri=uri.replace('postgres://','postgresql://')
-# app.config["SQLALCHEMY_DATABASE_URI"] = uri
+uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
+if uri.startswith("postgres://"):
+    uri=uri.replace('postgres://','postgresql://')
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
@@ -115,7 +115,7 @@ def homepage():
         weight_highs_normal.append(BMI.calculate_normal_high_weight_by_height(height))
     
     #### calories out
-    user_calories_out = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)*ACTIVITY_LEVELS[g.user.activity_level]) for row in data]
+    user_calories_out = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)*ACTIVITY_LEVELS[g.user.activity_level]) for row in last_7_user_food_data]
 
     #### Goal Calories In
     user_goal_calories_in = [calories_out+PLANS[g.user.diet_plan] for calories_out in user_calories_out]
