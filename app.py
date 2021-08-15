@@ -14,6 +14,7 @@ from sqlalchemy.sql.functions import user
 from wtforms.fields.simple import PasswordField
 
 from models import UserFood, db, connect_db, User, BMI
+from constants import PLANS, ACTIVITY_LEVELS, BMI_LOW_NORMAL, BMI_HIGH_NORMAL, BASE_API_URL
 
 from forms import FoodIntakeForm, UserAddForm, UserEditForm, LoginForm, BMIForm, PlanForm
 
@@ -24,13 +25,13 @@ app = Flask(__name__)
 API_SECRET_KEY = os.environ.get("API_SECRET_KEY")
 
 # to use in local environment, comment out
-# from secrets import API_SECRET_KEY
-# app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1'
-#
-uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
-if uri.startswith("postgres://"):
-    uri=uri.replace('postgres://','postgresql://')
-app.config["SQLALCHEMY_DATABASE_URI"] = uri
+from secrets import API_SECRET_KEY
+app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1'
+
+# uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
+# if uri.startswith("postgres://"):
+#     uri=uri.replace('postgres://','postgresql://')
+# app.config["SQLALCHEMY_DATABASE_URI"] = uri
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
@@ -48,25 +49,6 @@ def login_required(func):
             return redirect("/")
         return func(*args,**kwargs)
     return wrapper
-
-plans = {
-    'Maintain current weight; 0 calories deficit':0,
-    'Lose .5lb per week; 250 calories deficit': -250,
-    'Lose 1lb per week; 500 calories deficit': -500,
-    'Lose 1.5lbs per week; 750 calories deficit': -750,
-    'Gain .5lb per week; 250 calories surplus': 250,
-    'Gain 1lb per week; 500 calories surplus': 500,
-    'Gain 1.5lbs per week; 750 calories surplus': 750,
-}
-
-activity_levels={
-    "Sedentary (little to no exercise)":1.2,
-    "Lightly active (light exercise 1–3 days per week)":1.375,
-    "Moderately active (moderate exercise 3–5 days per week)":1.55,
-    "Very active (hard exercise 6–7 days per week)":1.725,
-    "Extra active (very hard exercise, training, or a physical job)":1.9
-}
-
 
 def keep_login(user):
     """Add user to session."""
@@ -90,58 +72,58 @@ def add_user_to_g():
 @app.route('/')
 def homepage():
     
-    if g.user:
-         
-        qry = db.session.query(      
-                    UserFood.date.label('date'),
-                    func.sum(UserFood.calories).label("total_calories"),
-                    ).filter_by(user_id=g.user.id)
-        qry = qry.group_by(UserFood.date).order_by(UserFood.date.desc())
-
-        data = [res for res in qry.limit(7).all()]
-        data=[(t[0].strftime('%m/%d/%Y'),t[1]) for t in data]
-        data.sort()
+    if not g.user:
+        return render_template('home.html')
         
+    user_food_query = db.session.query(      
+                UserFood.date.label('date'),
+                func.sum(UserFood.calories).label("total_calories"),
+                ).filter_by(user_id=g.user.id)
+    # querying last 7 user food entries
+    last_7_user_food_query = user_food_query.group_by(UserFood.date).order_by(UserFood.date.desc()).limit(7).all()
+    # django: query.values_list('date', 'amount') => [(date_1, amount_1), (date_2, amount_2)]
+    # Example shape of the last_7_user_food_query: [sqlalchemy.util._collections.result((datetime.date(2021, 8, 7), 1697)), sqlalchemy.util._collections.result((datetime.date(2021, 8, 5), 1140)), sqlalchemy.util._collections.result((datetime.date(2021, 8, 4), 570)), sqlalchemy.util._collections.result((datetime.date(2021, 8, 3), 548)), sqlalchemy.util._collections.result((datetime.date(2021, 7, 10), 1118))]
 
-        labels = [row[0] for row in data]
-        values = [row[1] for row in data]
-        
-
-        qry1 = BMI.query.order_by(BMI.date.desc()).filter_by(user_id=g.user.id)
-
-
-        data1 = [(res.date,res.bmi, res.weight) for res in qry1.limit(7).all()]
-        height = int(g.user.height)
-
-        
-
-        data1=[(t[0].strftime('%m/%d/%Y'),t[1],t[2],18.5,24.9,int(18.01*((height)**2)/703),int(25*((height)**2)/703)) for t in data1]
-        data1.sort()
-            
-        labels1 = [row[0] for row in data1]
-        values1 = [row[1] for row in data1]
-        values2 = [row[2] for row in data1]
-        values3 = [row[3] for row in data1]
-        values4 = [row[4] for row in data1]
-        values5 = [row[5] for row in data1]
-        values6 = [row[6] for row in data1]
-        #### calories out
-        values7 = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)*activity_levels[g.user.activity_level]) for row in data]
-
-        #### Goal Calories In
-        values8 = [c_out+plans[g.user.diet_plan] for c_out in values7]
-
-        last_date = labels1[-1]
+    data = [(t[0].strftime('%m/%d/%Y'),t[1]) for t in last_7_user_food_query]
+    # Example shape of the data: [('08/07/2021', 1697), ('08/05/2021', 1140), ('08/04/2021', 570), ('08/03/2021', 548), ('07/10/2021', 1118)]
     
-        high=values6[-1]
-        low=values5[-1]
-       
-        return render_template('home-loggedin.html',labels=labels, values=values, labels1=labels1, values1=values1,values2=values2, values3=values3,values4=values4, values5=values5,values6=values6,
-        values7=values7,values8=values8, last_date=last_date,high=high,low=low)
-        
-
+    # sort by date ascending order
+    data.sort()
+    # Example shape of the data: [('07/10/2021', 1118), ('08/03/2021', 548), ('08/04/2021', 570), ('08/05/2021', 1140), ('08/07/2021', 1697)]
+    user_food_dates, user_food_calories = [], []
+    for row in data:
+        user_food_dates.append(row[0])
+        user_food_calories.append(row[1]) 
     
-    return render_template('home.html')
+    #order by date descending first to get last 7 entries, then sort by date ascending.
+    user_bmi_query = BMI.query.order_by(BMI.date.desc()).filter_by(user_id=g.user.id).limit(7).all()
+
+    height = int(g.user.height)
+    date_bmi_weight_entries_ascending = [(res.date,res.bmi, res.weight) for res in user_bmi_query]
+    #sorting by date - ascending
+    date_bmi_weight_entries_ascending.sort()
+
+    # Constants updated
+    user_bmi_dates, bmis, weights, bmi_lows_normal, bmi_highs_normal, weight_lows_normal, weight_highs_normal= [], [], [], [], [], [], []
+    for t in date_bmi_weight_entries_ascending:
+        user_bmi_dates.append(t[0].strftime('%m/%d/%Y'))
+        bmis.append(t[1])
+        weights.append(t[2])
+        bmi_lows_normal.append(BMI_LOW_NORMAL)
+        bmi_highs_normal.append(BMI_HIGH_NORMAL)
+        weight_lows_normal.append(BMI.calculate_normal_low_weight_by_height(height))
+        weight_highs_normal.append(BMI.calculate_normal_high_weight_by_height(height))
+    
+    #### calories out
+    user_calories_out = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)*ACTIVITY_LEVELS[g.user.activity_level]) for row in data]
+
+    #### Goal Calories In
+    user_goal_calories_in = [calories_out+PLANS[g.user.diet_plan] for calories_out in user_calories_out]
+
+    last_recorded_bmi_date = user_bmi_dates[-1]
+    
+    return render_template('home-loggedin.html',user_food_dates=user_food_dates, user_food_calories=user_food_calories, user_bmi_dates=user_bmi_dates, bmis=bmis,weights=weights, bmi_lows_normal=bmi_lows_normal,bmi_highs_normal=bmi_highs_normal, weight_lows_normal=weight_lows_normal,weight_highs_normal=weight_highs_normal,
+    user_calories_out=user_calories_out,user_goal_calories_in=user_goal_calories_in, last_recorded_bmi_date=last_recorded_bmi_date,high_weight_normal=BMI.calculate_normal_high_weight_by_height(height),low_weight_normal=BMI.calculate_normal_low_weight_by_height(height))
 
 
 ###### signup/login/logout
@@ -153,42 +135,40 @@ def signup():
     form = UserAddForm()
 
     form.gender.choices=[("female","female"),("male","male")]
-    activity_level_choices= [(al,al) for al in activity_levels]
+    activity_level_choices= [(al,al) for al in ACTIVITY_LEVELS]
     form.activity_level.choices=activity_level_choices
-    plan_choices = [(plan,plan) for plan in plans]
+    plan_choices = [(plan,plan) for plan in PLANS]
     form.diet_plan.choices=plan_choices
 
-    if form.validate_on_submit():
-        try:
-            user = User.signup(
-                username=form.username.data,
-                password=form.password.data,
-                weight=form.weight.data,
-                height= BMI.cal_height_inches(form.height.data),
-                image_url=form.image_url.data or User.image_url.default.arg,
-                gender=form.gender.data,
-                age=form.age.data,
-                activity_level=form.activity_level.data,
-                diet_plan=form.diet_plan.data
-            )
-
-        except IntegrityError as e:
-            flash("Username already taken", 'danger')
-            return render_template('users/signup.html', form=form)
-
-        keep_login(user)
-        height = BMI.cal_height_inches(form.height.data)
-        weight = form.weight.data
-        bmi =  BMI.calculate_BMI(height,weight)
-        add_bmi = BMI(bmi=bmi, weight=form.weight.data, user_id=user.id)
-        db.session.add_all([add_bmi])
-        
-        db.session.commit()
-
-        return redirect("/")
-
-    else:
+    if not form.validate_on_submit():
         return render_template('users/signup.html', form=form)
+    try:
+        user = User.signup(
+            username=form.username.data,
+            password=form.password.data,
+            weight=form.weight.data,
+            height= BMI.cal_height_inches(form.height.data),
+            image_url=form.image_url.data or User.image_url.default.arg,
+            gender=form.gender.data,
+            age=form.age.data,
+            activity_level=form.activity_level.data,
+            diet_plan=form.diet_plan.data
+        )
+
+    except IntegrityError as e:
+        flash("Username already taken", 'danger')
+        return render_template('users/signup.html', form=form)
+
+    keep_login(user)
+    height = BMI.cal_height_inches(form.height.data)
+    weight = form.weight.data
+    bmi =  BMI.calculate_BMI(height,weight)
+    add_bmi = BMI(bmi=bmi, weight=form.weight.data, user_id=user.id)
+    db.session.add_all([add_bmi])
+    
+    db.session.commit()
+
+    return redirect("/")
 
 @app.route('/logout')
 def logout():
@@ -204,8 +184,7 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.authenticate(form.username.data,
-                                 form.password.data)
+        user = User.authenticate(form.username.data, form.password.data)
 
         if user:
             keep_login(user)
@@ -224,51 +203,53 @@ def edit_profile():
     user = g.user
     form = UserAddForm(obj=user)
     form.gender.choices=[("female","female"),("male","male")]
-    activity_level_choices= [(al,al) for al in activity_levels]
+    activity_level_choices= [(al,al) for al in ACTIVITY_LEVELS]
     form.activity_level.choices=activity_level_choices
-    plan_choices = [(plan,plan) for plan in plans]
+    plan_choices = [(plan,plan) for plan in PLANS]
     form.diet_plan.choices=plan_choices
 
-    if form.validate_on_submit():
-        if User.authenticate(user.username, form.password.data):
-            user.username = form.username.data,
-            user.weight=form.weight.data,
-            user.height= BMI.cal_height_inches(form.height.data),
-            user.image_url=form.image_url.data or User.image_url.default.arg,
-            user.gender=form.gender.data,
-            user.age=form.age.data,
-            user.activity_level=form.activity_level.data,
-            user.diet_plan=form.diet_plan.data
-
-            height = BMI.cal_height_inches(form.height.data)
-            weight = form.weight.data
-            bmi =  BMI.calculate_BMI(height,weight)
-            b = db.session.query(BMI).filter(BMI.user_id==g.user.id,BMI.date==datetime.utcnow().date()).first()
-            if not b:
-                add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
-                db.session.add_all([user,add_bmi])
-            else:
-                b.bmi=bmi
-                b.weight=weight
-                db.session.add_all([user,b])
+    if not form.validate_on_submit():
+        return render_template('users/edit.html', form=form, user_id=user.id)
 
 
-            db.session.commit()
-            flash("User profile successfully updated","success")
-            return redirect("/")
+    if User.authenticate(user.username, form.password.data):
+        user.username = form.username.data,
+        user.weight = form.weight.data,
+        user.height = BMI.cal_height_inches(form.height.data),
+        user.image_url = form.image_url.data or User.image_url.default.arg,
+        user.gender = form.gender.data,
+        user.age = form.age.data,
+        user.activity_level = form.activity_level.data,
+        user.diet_plan = form.diet_plan.data
 
-        flash("Wrong password, please try again.", 'danger')
+        height = BMI.cal_height_inches(form.height.data)
+        weight = form.weight.data
+        bmi =  BMI.calculate_BMI(height,weight)
+        b = db.session.query(BMI).filter(BMI.user_id==g.user.id,BMI.date==datetime.utcnow().date()).first()
+        if not b:
+            add_bmi = BMI(bmi=bmi, weight=weight, user_id=user.id)
+            db.session.add_all([user,add_bmi])
+        else:
+            b.bmi=bmi
+            b.weight=weight
+            db.session.add_all([user,b])
 
-    return render_template('users/edit.html', form=form, user_id=user.id)
 
+        db.session.commit()
+        flash("User profile successfully updated","success")
+        return redirect("/")
+
+    flash("Wrong password, please try again.", 'danger')
+    return redirect('/users/profile')
+    
 
 ###### bmi
 
 @app.route('/bmi',methods=['GET','POST'])
-def bmiForm():
+def bmi_form():
     form = BMIForm()
     plan_form= PlanForm()
-    plan_choices = [(plan,plan) for plan in plans]
+    plan_choices = [(plan,plan) for plan in PLANS]
     plan_form.plan.choices=plan_choices
     if form.validate_on_submit():
         height = BMI.cal_height_inches(form.height.data)
@@ -280,9 +261,6 @@ def bmiForm():
 
         if g.user:            
             user = g.user
-            # user.bmi.bmi = bmi
-            # raise
-            # import pdb;pdb.set_trace()
             user.height = height
             user.weight = weight
             b = db.session.query(BMI).filter(BMI.user_id==g.user.id,BMI.date==datetime.utcnow().date()).first()
@@ -316,7 +294,8 @@ def search_food():
     no_result="Search recipes here."
     if form.validate_on_submit():
         search = form.search.data
-        resp = requests.get('https://api.spoonacular.com/food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
+        # Base URL constant added
+        resp = requests.get(BASE_API_URL+'food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
         
         data=resp.json()
         try:
@@ -333,7 +312,7 @@ def search_food():
         data['results'][0]['image'] = img_url
         data['results'][0]['title']=data['results'][0]['name']
 
-        cal_resp = requests.get(f'https://api.spoonacular.com/food/ingredients/{food_id}/information',params={"amount": 1,"apiKey":API_SECRET_KEY})
+        cal_resp = requests.get(BASE_API_URL+f'food/ingredients/{food_id}/information',params={"amount": 1,"apiKey":API_SECRET_KEY})
         content = cal_resp.json()
         for obj in content["nutrition"]["nutrients"]:
             if obj["title"]=="Calories":
@@ -342,7 +321,7 @@ def search_food():
         data['results'][0]["nutrition"]=content["nutrition"]
 
 
-        resp2 = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
+        resp2 = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
         data2 = resp2.json() 
 
         data['results'].extend(data2['results'])
@@ -357,7 +336,7 @@ def search_recipes():
     if form.validate_on_submit():
         search = form.search.data
         
-        resp2 = requests.get('https://api.spoonacular.com/recipes/complexSearch',params={"query": search,"minCalories":0, "number":10,"apiKey":API_SECRET_KEY})
+        resp2 = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":10,"apiKey":API_SECRET_KEY})
         data = resp2.json() 
 
         return render_template('recipes.html', form=form, data=data)
@@ -370,16 +349,15 @@ def show_recipe(food_id):
         if r['id'] == food_id:
             no_result = f"API error: {r['title']} recipe card not found"
     
-    resp = requests.get(f'https://api.spoonacular.com/recipes/{food_id}/card',params={"apiKey":API_SECRET_KEY})
+    resp = requests.get(BASE_API_URL+f'recipes/{food_id}/card',params={"apiKey":API_SECRET_KEY})
     data = resp.json()
     try:
         url=data['url']
-        return render_template("recipe-card.html",url=url)  
     except KeyError:
         flash(f"{no_result}","danger")
         return redirect('/food-intake')
-
-
+    else:
+        return render_template("recipe-card.html",url=url)  
 
 @app.errorhandler(404)
 def page_not_found(e):

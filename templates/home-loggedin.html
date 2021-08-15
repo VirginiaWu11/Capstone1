@@ -19,7 +19,7 @@
           <h5 class="card-title">Weight</h5>
           <canvas id="weightLineChart" width="900" height="400"> </canvas>
           <br>
-          <p>In this section, you will find two line-charts, separated by tabs; One for weight, and one for BMI as shown on the vertical axis of the chart. The blue line indicates the last 7 weights you have recorded, and the weight range between two pink lines is considered normal weight. As of <b>{{last_date}}</b>, your weight was <b>{{g.user.weight}}</b> pounds. According to BMI guidelines, at your height of <b>{{g.user.height}}</b> inches, the normal weight is between <b>{{low}}</b> and <b>{{high}}</b> pounds.
+          <p>In this section, you will find two line-charts, separated by tabs; One for weight, and one for BMI as shown on the vertical axis of the chart. The blue line indicates the last 7 weights you have recorded, and the weight range between two pink lines is considered normal weight. As of <b>{{last_recorded_bmi_date}}</b>, your weight was <b>{{g.user.weight}}</b> pounds. According to BMI guidelines, at your height of <b>{{g.user.height}}</b> inches, the normal weight is between <b>{{low_weight_normal}}</b> and <b>{{high_weight_normal}}</b> pounds.
             </p>
         </div>
       </div>
@@ -31,7 +31,7 @@
           <h5 class="card-title">BMI</h5>
           <canvas id="BMILineChart" width="900" height="400"> </canvas>
           <br>
-          <p>In this section, you will find two line-charts, separated by tabs; One for weight, and one for BMI as shown on the vertical axis of the chart. The blue line indicates the last 7 weights you have recorded, and the weight range between two pink lines is considered normal weight. As of <b>{{last_date}}</b>, you weight was <b>{{g.user.weight}}</b> pounds. According to BMI guidelines, at your height of <b>{{g.user.height}}</b> inches, the normal weight is between <b>{{low}}</b> and <b>{{high}}</b> pounds.
+          <p>In this section, you will find two line-charts, separated by tabs; One for weight, and one for BMI as shown on the vertical axis of the chart. The blue line indicates the last 7 weights you have recorded, and the weight range between two pink lines is considered normal weight. As of <b>{{last_recorded_bmi_date}}</b>, you weight was <b>{{g.user.weight}}</b> pounds. According to BMI guidelines, at your height of <b>{{g.user.height}}</b> inches, the normal weight is between <b>{{low}}</b> and <b>{{high}}</b> pounds.
           </p>
         </div>
       </div>
@@ -84,26 +84,26 @@
     let caloriesInLineChart = new Chart(ctx,{
       type:"bar",
       data:{
-        labels:{{ labels | safe}},
+        labels:{{ user_food_dates | safe}},
 
         datasets:[
           {
             label: "Calories In",
-            data:{{values | safe}},
+            data:{{user_food_calories | safe}},
             fill: true,
             borderColor:"rgb(0,192,255)",
             backgroundColor: "rgba(0,192,255,.5)",
           },
           {
             label: "Calories Out",
-            data:{{values7 | safe}},
+            data:{{user_calories_out | safe}},
             fill: true,
             borderColor:"rgb(0,192,255)",
             backgroundColor: "rgba(255,0,100,.5)",
           },
           {
             label: 'Goal Calories Intake',
-            data: {{values8 | safe}},
+            data: {{user_goal_calories_in | safe}},
             borderDash: [5, 5],
             borderColor:"rgb(255,0,192)",
             type: 'line',
@@ -119,13 +119,13 @@
     let BMILineChart = new Chart(bmiC,{
       type:"line",
       data:{
-        labels:{{ labels1 | safe}},
+        labels:{{ user_bmi_dates | safe}},
 
 
         datasets:[
           {
             label: "BMI",
-            data:{{values1 | safe}},
+            data:{{bmis | safe}},
             fill: false,
             borderColor:"rgb(0,192,255)",
 
@@ -133,14 +133,14 @@
           {
             label: "ideal-low",
             borderDash: [5, 5],
-            data:{{values3 | safe}},
+            data:{{bmi_lows_normal | safe}},
             fill: false,
             borderColor:"rgb(255,0,192)",
           },
           {
             label: "ideal-high",
             borderDash: [5, 5],
-            data:{{values4 | safe}},
+            data:{{bmi_highs_normal | safe}},
             fill: false,
             borderColor:"rgb(255,0,192)",
           },
@@ -153,13 +153,13 @@
     let weightLineChart = new Chart(weightC,{
       type:"line",
       data:{
-        labels:{{ labels1 | safe}},
+        labels:{{ user_bmi_dates | safe}},
 
         datasets:[
 
           {
             label: "weight",
-            data:{{values2 | safe}},
+            data:{{weights | safe}},
             fill: false,
             borderColor:"rgb(0,192,255)",
 
@@ -167,7 +167,7 @@
           {
             label: "ideal-low",
             borderDash: [5, 5],
-            data:{{values5 | safe}},
+            data:{{weight_lows_normal | safe}},
             fill: false,
             borderColor:"rgb(255,0,192)",
 
@@ -176,7 +176,7 @@
           {
             label: "ideal-high",
             borderDash: [5, 5],
-            data:{{values6 | safe}},
+            data:{{weight_highs_normal | safe}},
             fill: false,
             borderColor:"rgb(255,0,192)",
           },

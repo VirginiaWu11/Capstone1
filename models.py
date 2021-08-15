@@ -7,6 +7,9 @@ from sqlalchemy.orm import backref
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
+from constants import BMI_LOW_NORMAL, BMI_HIGH_NORMAL, CATEGORIES
+
+
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
@@ -64,12 +67,7 @@ class User(db.Model):
         db.Text,
         nullable = False
     )
-# https://www.healthline.com/health/fitness-exercise/how-many-calories-do-i-burn-a-day#calories-burned
-    # 1.2, or sedentary (little to no exercise)
-    # 1.375, or lightly active (light exercise 1–3 days per week)
-    # 1.55, or moderately active (moderate exercise 3–5 days per week)
-    # 1.725, or very active (hard exercise 6–7 days per week)
-    # 1.9, or extra active (very hard exercise, training, or a physical job)
+
 
     bmi = db.relationship('BMI', backref='users')
     user_food = db.relationship('UserFood', backref='users')
@@ -205,18 +203,9 @@ class BMI(db.Model):
 
     @classmethod
     def BMI_range(cls, bmi): 
-        categories = [
-            (16,"Severe Thinness"),
-            (17,"Moderate Thinness"),
-            (18,"Mild Thinness"),
-            (25,"Normal"),
-            (30,"Overweight"),
-            (35,"Obese Class I"),
-            (40,"Obese Class II"),
-            (100,"Obese Class III"),
-        ]
-        pos=bisect_right(categories,(bmi,))
-        return categories[pos][1]
+        pos=bisect_right(CATEGORIES,(bmi,))
+        return CATEGORIES[pos][1]
+
     @classmethod
     def lbs_away(cls, bmi, height, weight): 
         if(bmi <=18.01):
@@ -225,3 +214,11 @@ class BMI(db.Model):
         if(bmi > 25):
             goal_weight = int(25*((height)**2)/703)
             return weight-goal_weight
+
+    @classmethod
+    def calculate_normal_low_weight_by_height(cls, height):
+        return int(BMI_LOW_NORMAL * ((height)**2)/703)
+
+    @classmethod
+    def calculate_normal_high_weight_by_height(cls, height):
+        return int(BMI_HIGH_NORMAL * ((height)**2)/703)
