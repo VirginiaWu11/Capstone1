@@ -321,10 +321,10 @@ def search_food():
         ingredients_data['results'][0]["nutrition"]=content["nutrition"]
 
 
-        resp2 = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
-        data2 = resp2.json() 
+        recipes_resp = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
+        recipes_data = recipes_resp.json() 
 
-        ingredients_data['results'].extend(data2['results'])
+        ingredients_data['results'].extend(recipes_data['results'])
         session["data"] = ingredients_data
         return render_template('users/food-intake.html', form=form, ingredients_data=ingredients_data)
     return render_template('users/food-intake.html', form=form,no_result=no_result)
