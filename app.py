@@ -295,22 +295,22 @@ def search_food():
     if form.validate_on_submit():
         search = form.search.data
         # Base URL constant added
-        resp = requests.get(BASE_API_URL+'food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
+        ingredients_resp = requests.get(BASE_API_URL+'food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
         
-        data=resp.json()
+        ingredients_data=ingredients_resp.json()
         try:
-            food_id= data['results'][0]['id']
+            food_id= ingredients_data['results'][0]['id']
         except IndexError:
             flash(f'API: "{search}" not found.', 'danger')
             return redirect("/food-intake")
-        imge = data['results'][0]['image']
+        imge = ingredients_data['results'][0]['image']
         img_url= "https://spoonacular.com/cdn/ingredients_100x100/"+imge
         
 
         
         
-        data['results'][0]['image'] = img_url
-        data['results'][0]['title']=data['results'][0]['name']
+        ingredients_data['results'][0]['image'] = img_url
+        ingredients_data['results'][0]['title']=ingredients_data['results'][0]['name']
 
         cal_resp = requests.get(BASE_API_URL+f'food/ingredients/{food_id}/information',params={"amount": 1,"apiKey":API_SECRET_KEY})
         content = cal_resp.json()
@@ -318,15 +318,15 @@ def search_food():
             if obj["title"]=="Calories":
                 content["nutrition"]["nutrients"][0]=obj
 
-        data['results'][0]["nutrition"]=content["nutrition"]
+        ingredients_data['results'][0]["nutrition"]=content["nutrition"]
 
 
         resp2 = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
         data2 = resp2.json() 
 
-        data['results'].extend(data2['results'])
-        session["data"] = data
-        return render_template('users/food-intake.html', form=form, data=data)
+        ingredients_data['results'].extend(data2['results'])
+        session["data"] = ingredients_data
+        return render_template('users/food-intake.html', form=form, ingredients_data=ingredients_data)
     return render_template('users/food-intake.html', form=form,no_result=no_result)
 
 
