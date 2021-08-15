@@ -12,9 +12,12 @@ from sqlalchemy import exc
 
 from models import db, User
 
-os.environ['DATABASE_URL'] = "postgresql:///capstone1-test"
+os.environ['DATABASE_URL'] = "postgresql:///capstone1test"
+
 
 from app import app
+app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1test'
+db.create_all()
 
 class UserModelTestCase(TestCase):
     """Test views for messages."""
