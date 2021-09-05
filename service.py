@@ -1,7 +1,7 @@
 from models import UserFood, db, BMI, User
 from sqlalchemy.sql import func
 from flask import g
-from constants import BMI_LOW_NORMAL, BMI_HIGH_NORMAL, ACTIVITY_LEVELS
+from constants import BMI_LOW_NORMAL, BMI_HIGH_NORMAL, ACTIVITY_LEVELS, PLANS
 
 
 class UserFoodService:
@@ -73,4 +73,9 @@ class UserFoodService:
         user_calories_out = [int(User.basal_metabolic_rate(user.weight, int(user.height), user.age, user.gender) * ACTIVITY_LEVELS[user.activity_level]) for row in last_seven_user_food_data]
         return user_calories_out
 
+    @classmethod
+    def get_user_goal_calories_in(cls, user_calories_out, user):
+        #### Goal Calories In
+        user_goal_calories_in = [calories_out+PLANS[user.diet_plan] for calories_out in user_calories_out]
+        return user_goal_calories_in
         

@@ -95,10 +95,9 @@ def homepage():
 
     user_calories_out = UserFoodService.get_user_calories_out(last_seven_user_food_data, g.user)
 
-    #### Goal Calories In
-    user_goal_calories_in = [calories_out+PLANS[g.user.diet_plan] for calories_out in user_calories_out]
-
     last_recorded_bmi_date = user_bmi_dates[-1]
+
+    user_goal_calories_in = UserFoodService.get_user_goal_calories_in(user_calories_out, g.user)
     
     return render_template('home-loggedin.html',user_food_dates=user_food_dates, user_food_calories=user_food_calories, user_bmi_dates=user_bmi_dates, bmis=bmis,weights=weights, bmi_lows_normal=bmi_lows_normal,bmi_highs_normal=bmi_highs_normal, weight_lows_normal=weight_lows_normal,weight_highs_normal=weight_highs_normal,
     user_calories_out=user_calories_out,user_goal_calories_in=user_goal_calories_in, last_recorded_bmi_date=last_recorded_bmi_date,high_weight_normal=BMI.calculate_normal_high_weight_by_height(int(g.user.height)),low_weight_normal=BMI.calculate_normal_low_weight_by_height(int(g.user.height)))
