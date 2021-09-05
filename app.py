@@ -2,7 +2,7 @@ import os
 import requests
 import json
 
-from service import UserFoodService
+from service import UserFoodService, UserBMIService
 
 from datetime import datetime, timedelta
 from functools import wraps
@@ -23,10 +23,10 @@ CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
-API_SECRET_KEY = os.environ.get("API_SECRET_KEY")
+# API_SECRET_KEY = os.environ.get("API_SECRET_KEY")
 
 # to use in local environment, comment out
-# from secrets import API_SECRET_KEY
+from secrets import API_SECRET_KEY
 app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1'
 
 # uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
@@ -270,30 +270,16 @@ def search_food():
         return render_template('users/food-intake.html', form=form,no_result=no_result)
 
     search = form.search.data
-    # Base URL constant added
-    ingredients_resp = requests.get(BASE_API_URL+'food/ingredients/search',params={"query": search, "number":1,"apiKey":API_SECRET_KEY})
-    
-    ingredients_data=ingredients_resp.json()
+
+    ingredients_data = UserBMIService.query_ingredients_resp(search)
+
     try:
         food_id= ingredients_data['results'][0]['id']
     except IndexError:
         flash(f'API: "{search}" not found.', 'danger')
         return redirect("/food-intake")
-    imge = ingredients_data['results'][0]['image']
-    img_url= "https://spoonacular.com/cdn/ingredients_100x100/"+imge
-    
-    ingredients_data['results'][0]['image'] = img_url
-    ingredients_data['results'][0]['title']=ingredients_data['results'][0]['name']
 
-    ingredients_calories_resp = requests.get(BASE_API_URL+f'food/ingredients/{food_id}/information',params={"amount": 1,"apiKey":API_SECRET_KEY})
-    ingredients_calories_content = ingredients_calories_resp.json()
-    # Example shape of the ingredients_calories_content: {'id': 9040, 'original': 'ripe bananas', 'originalName': 'ripe bananas', 'name': 'ripe bananas', 'amount': 1.0, 'unit': '', 'unitShort': '', 'unitLong': '', 'possibleUnits': ['small', 'large', 'piece', 'slice', 'g', 'extra small', 'medium', 'oz',   ], 'estimatedCost': {'value': 15.73, 'unit': 'US Cents'}, 'consistency': 'solid', 'shoppingListUnits': ['pieces'], 'aisle': 'Produce', 'image': 'bananas.jpg', 'meta': [], 'nutrition': {'nutrients': [{'title': 'Iron', 'name': 'Iron', 'amount': 0.31, 'unit': 'mg'}, {'title': 'Phosphorus', 'name': 'Phosphorus', 'amount': 25.96, 'unit': 'mg'}, {'title': 'Vitamin B3', 'name': 'Vitamin B3', 'amount': 0.78, 'unit': 'mg'}, {'title': 'Mono Unsaturated Fat', 'name': 'Mono Unsaturated Fat', 'amount': 0.04, 'unit': 'g'}, {'title': 'Manganese', 'name': 'Manganese', 'amount': 0.32, 'unit': 'mg'}, {'title': 'Vitamin D', 'name': 'Vitamin D', 'amount': 0.0, 'unit': 'µg'}, {'title': 'Folic Acid', 'name': 'Folic Acid', 'amount': 0.0, 'unit': 'µg'}, {'title': 'Vitamin C', 'name': 'Vitamin C', 'amount': 10.27, 'unit': 'mg'},   ], 'properties': [{'name': 'Glycemic Index', 'title': 'Glycemic Index', 'amount': 54.78, 'unit': ''}, {'name': 'Glycemic Load', 'title': 'Glycemic Load', 'amount': 13.08, 'unit': ''}], 'flavonoids': [{'name': 'Cyanidin', 'title': 'Cyanidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Petunidin', 'title': 'Petunidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Delphinidin', 'title': 'Delphinidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Malvidin', 'title': 'Malvidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Pelargonidin', 'title': 'Pelargonidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Peonidin', 'title': 'Peonidin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Catechin', 'title': 'Catechin', 'amount': 7.2, 'unit': 'mg'}, {'name': 'Epigallocatechin', 'title': 'Epigallocatechin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Epicatechin', 'title': 'Epicatechin', 'amount': 0.02, 'unit': 'mg'}, {'name': 'Epicatechin 3-gallate', 'title': 'Epicatechin 3-gallate', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Epigallocatechin 3-gallate', 'title': 'Epigallocatechin 3-gallate', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Theaflavin', 'title': 'Theaflavin', 'amount': 0.0, 'unit': ''}, {'name': 'Thearubigins', 'title': 'Thearubigins', 'amount': 0.0, 'unit': ''}, {'name': 'Eriodictyol', 'title': 'Eriodictyol', 'amount': 0.0, 'unit': ''}, {'name': 'Hesperetin', 'title': 'Hesperetin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Naringenin', 'title': 'Naringenin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Apigenin', 'title': 'Apigenin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Luteolin', 'title': 'Luteolin', 'amount': 0.0, 'unit': 'mg'}, {'name': 'Isorhamnetin', 'title': 'Isorhamnetin', 'amount': 0.0, 'unit': ''}, {'name': 'Kaempferol', 'title': 'Kaempferol', 'amount': 0.13, 'unit': 'mg'}, {'name': 'Myricetin', 'title': 'Myricetin', 'amount': 0.01, 'unit': 'mg'}, {'name': 'Quercetin', 'title': 'Quercetin', 'amount': 0.07, 'unit': 'mg'}, {'name': "Theaflavin-3,3'-digallate", 'title': "Theaflavin-3,3'-digallate", 'amount': 0.0, 'unit': ''}, {'name': "Theaflavin-3'-gallate", 'title': "Theaflavin-3'-gallate", 'amount': 0.0, 'unit': ''}, {'name': 'Theaflavin-3-gallate', 'title': 'Theaflavin-3-gallate', 'amount': 0.0, 'unit': ''}, {'name': 'Gallocatechin', 'title': 'Gallocatechin', 'amount': 0.0, 'unit': 'mg'}  ], 'caloricBreakdown': {'percentProtein': 4.42, 'percentFat': 3.01, 'percentCarbs': 92.57}, 'weightPerServing': {'amount': 118, 'unit': 'g'}  }, 'categoryPath': ['banana', 'tropical fruit', 'fruit']  }
-    
-    for obj in ingredients_calories_content["nutrition"]["nutrients"]:
-        if obj["title"]=="Calories":
-            ingredients_calories_content["nutrition"]["nutrients"][0]=obj
-
-    ingredients_data['results'][0]["nutrition"]=ingredients_calories_content["nutrition"]
+    ingredients_data = UserFoodService.format_ingredients_data(food_id, ingredients_data)
 
     recipes_resp = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
     recipes_data = recipes_resp.json() 
