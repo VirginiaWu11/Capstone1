@@ -103,6 +103,11 @@ class UserFoodService:
         ingredients_data['results'][0]["nutrition"]=ingredients_calories_content["nutrition"]
         return ingredients_data
 
+    @classmethod
+    def query_recipes_response(cls, search):
+        recipes_resp = requests.get(BASE_API_URL+'recipes/complexSearch', params = {"query" : search, "minCalories" : 0, "number" : 11, "apiKey":API_SECRET_KEY})
+        recipes_data = recipes_resp.json() 
+        return recipes_data
 
         
 class UserBMIService:

@@ -281,12 +281,12 @@ def search_food():
 
     ingredients_data = UserFoodService.format_ingredients_data(food_id, ingredients_data)
 
-    recipes_resp = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":11,"apiKey":API_SECRET_KEY})
-    recipes_data = recipes_resp.json() 
+    recipes_data = UserFoodService.query_recipes_response(search)
 
+    # combine first ingredient and 9 recipes
     ingredients_data['results'].extend(recipes_data['results'])
     session["data"] = ingredients_data
-    return render_template('users/food-intake.html', form=form, ingredients_data=ingredients_data)
+    return render_template('users/food-intake.html', form = form, ingredients_data=ingredients_data)
     
 
 @app.route('/recipes',methods=['GET','POST'])
@@ -295,13 +295,13 @@ def search_recipes():
     if form.validate_on_submit():
         search = form.search.data
         
-        resp2 = requests.get(BASE_API_URL+'recipes/complexSearch',params={"query": search,"minCalories":0, "number":10,"apiKey":API_SECRET_KEY})
+        resp2 = requests.get(BASE_API_URL + 'recipes/complexSearch', params = {"query": search,"minCalories" : 0, "number":10, "apiKey" : API_SECRET_KEY})
         data = resp2.json() 
 
         return render_template('recipes.html', form=form, data=data)
     return render_template('recipes.html', form=form)
 
-@app.route('/recipes/<int:food_id>',methods=['GET'])
+@app.route('/recipes/<int:food_id>', methods=['GET'])
 def show_recipe(food_id):
     for r in session['data']['results']:  
         if r['id'] == food_id:
