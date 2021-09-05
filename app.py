@@ -28,12 +28,12 @@ API_SECRET_KEY = os.environ.get("API_SECRET_KEY")
 
 # to use in local environment, comment out
 # from secrets import API_SECRET_KEY
-# app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1'
+app.config["SQLALCHEMY_DATABASE_URI"] = 'postgres:///capstone1'
 
-uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
-if uri.startswith("postgres://"):
-    uri=uri.replace('postgres://','postgresql://')
-app.config["SQLALCHEMY_DATABASE_URI"] = uri
+# uri = os.environ.get('DATABASE_URL',"postgresql://capstone1") 
+# if uri.startswith("postgres://"):
+#     uri=uri.replace('postgres://','postgresql://')
+# app.config["SQLALCHEMY_DATABASE_URI"] = uri
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
@@ -77,7 +77,9 @@ def homepage():
     if not g.user:
         return render_template('home.html')
         
-    user_food_dates_and_calories = UserFoodService.get_latest_user_food_information(g.user.id)
+    last_seven_user_food_data = UserFoodService.get_last_seven_user_food_information(g.user.id)
+
+    user_food_dates_and_calories = UserFoodService.get_user_food_dates_and_calories(last_seven_user_food_data)
     user_food_dates = user_food_dates_and_calories["user_food_dates"]
     user_food_calories = user_food_dates_and_calories["user_food_calories"]
 
@@ -85,7 +87,7 @@ def homepage():
     user_bmi_query = BMI.query.order_by(BMI.date.desc()).filter_by(user_id=g.user.id).limit(7).all()
 
     height = int(g.user.height)
-    date_bmi_weight_entries_ascending = [(res.date,res.bmi, res.weight) for res in user_bmi_query]
+    date_bmi_weight_entries_ascending = [(res.date, res.bmi, res.weight) for res in user_bmi_query]
     #sorting by date - ascending
     date_bmi_weight_entries_ascending.sort()
 
@@ -101,7 +103,7 @@ def homepage():
         weight_highs_normal.append(BMI.calculate_normal_high_weight_by_height(height))
     
     #### calories out
-    user_calories_out = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)*ACTIVITY_LEVELS[g.user.activity_level]) for row in last_7_user_food_data]
+    user_calories_out = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)*ACTIVITY_LEVELS[g.user.activity_level]) for row in last_seven_user_food_data]
 
     #### Goal Calories In
     user_goal_calories_in = [calories_out+PLANS[g.user.diet_plan] for calories_out in user_calories_out]
