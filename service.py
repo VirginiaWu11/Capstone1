@@ -37,9 +37,9 @@ class UserFoodService:
         # dict(user_food_dates=user_food_dates,user_food_calories=user_food_calories)
 
     @classmethod
-    def query_user_bmi_information(cls, user_id):
+    def query_user_bmi_information(cls, user):
         #order by date descending first to get last 7 entries, then sort by date ascending.
-        user_bmi_query = BMI.query.order_by(BMI.date.desc()).filter_by(user_id=g.user.id).limit(7).all()
+        user_bmi_query = BMI.query.order_by(BMI.date.desc()).filter_by(user_id=user.id).limit(7).all()
 
         date_bmi_weight_entries_ascending = [(res.date, res.bmi, res.weight) for res in user_bmi_query]
         #sorting by date - ascending
@@ -47,7 +47,7 @@ class UserFoodService:
         return date_bmi_weight_entries_ascending
 
     @classmethod
-    def get_bmi_information(cls, date_bmi_weight_entries_ascending):
+    def get_bmi_information(cls, date_bmi_weight_entries_ascending, user):
         user_bmi_dates, bmis, weights, bmi_lows_normal, bmi_highs_normal, weight_lows_normal, weight_highs_normal= [], [], [], [], [], [], []
         for t in date_bmi_weight_entries_ascending:
             user_bmi_dates.append(t[0].strftime('%m/%d/%Y'))
@@ -55,8 +55,8 @@ class UserFoodService:
             weights.append(t[2])
             bmi_lows_normal.append(BMI_LOW_NORMAL)
             bmi_highs_normal.append(BMI_HIGH_NORMAL)
-            weight_lows_normal.append(BMI.calculate_normal_low_weight_by_height(int(g.user.height)))
-            weight_highs_normal.append(BMI.calculate_normal_high_weight_by_height(int(g.user.height)))
+            weight_lows_normal.append(BMI.calculate_normal_low_weight_by_height(int(user.height)))
+            weight_highs_normal.append(BMI.calculate_normal_high_weight_by_height(int(user.height)))
         return {
             "user_bmi_dates" : user_bmi_dates, 
             "bmis" : bmis, 

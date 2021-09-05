@@ -82,9 +82,9 @@ def homepage():
     user_food_dates = user_food_dates_and_calories["user_food_dates"]
     user_food_calories = user_food_dates_and_calories["user_food_calories"]
 
-    date_bmi_weight_entries_ascending = UserFoodService.query_user_bmi_information(g.user.id)
+    date_bmi_weight_entries_ascending = UserFoodService.query_user_bmi_information(g.user)
 
-    user_bmi_dict = UserFoodService.get_bmi_information(date_bmi_weight_entries_ascending)
+    user_bmi_dict = UserFoodService.get_bmi_information(date_bmi_weight_entries_ascending, g.user)
     user_bmi_dates = user_bmi_dict["user_bmi_dates"]
     bmis = user_bmi_dict["bmis"]
     weights = user_bmi_dict["weights"]
