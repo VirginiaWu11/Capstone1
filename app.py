@@ -13,7 +13,6 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.functions import user
-from wtforms.fields.simple import PasswordField
 
 from models import UserFood, db, connect_db, User, BMI
 from constants import PLANS, ACTIVITY_LEVELS, BMI_LOW_NORMAL, BMI_HIGH_NORMAL, BASE_API_URL
@@ -83,27 +82,19 @@ def homepage():
     user_food_dates = user_food_dates_and_calories["user_food_dates"]
     user_food_calories = user_food_dates_and_calories["user_food_calories"]
 
-    #order by date descending first to get last 7 entries, then sort by date ascending.
-    user_bmi_query = BMI.query.order_by(BMI.date.desc()).filter_by(user_id=g.user.id).limit(7).all()
+    date_bmi_weight_entries_ascending = UserFoodService.query_user_bmi_information(g.user.id)
 
-    height = int(g.user.height)
-    date_bmi_weight_entries_ascending = [(res.date, res.bmi, res.weight) for res in user_bmi_query]
-    #sorting by date - ascending
-    date_bmi_weight_entries_ascending.sort()
+    user_bmi_dict = UserFoodService.get_bmi_information(date_bmi_weight_entries_ascending)
+    user_bmi_dates = user_bmi_dict["user_bmi_dates"]
+    bmis = user_bmi_dict["bmis"]
+    weights = user_bmi_dict["weights"]
+    bmi_lows_normal = user_bmi_dict["bmi_lows_normal"]
+    bmi_highs_normal = user_bmi_dict["bmi_highs_normal"]
+    weight_lows_normal = user_bmi_dict["weight_lows_normal"]
+    weight_highs_normal = user_bmi_dict["weight_highs_normal"]
 
-    # Constants updated
-    user_bmi_dates, bmis, weights, bmi_lows_normal, bmi_highs_normal, weight_lows_normal, weight_highs_normal= [], [], [], [], [], [], []
-    for t in date_bmi_weight_entries_ascending:
-        user_bmi_dates.append(t[0].strftime('%m/%d/%Y'))
-        bmis.append(t[1])
-        weights.append(t[2])
-        bmi_lows_normal.append(BMI_LOW_NORMAL)
-        bmi_highs_normal.append(BMI_HIGH_NORMAL)
-        weight_lows_normal.append(BMI.calculate_normal_low_weight_by_height(height))
-        weight_highs_normal.append(BMI.calculate_normal_high_weight_by_height(height))
-    
     #### calories out
-    user_calories_out = [int(User.basal_metabolic_rate(g.user.weight,height,g.user.age,g.user.gender)*ACTIVITY_LEVELS[g.user.activity_level]) for row in last_seven_user_food_data]
+    user_calories_out = [int(User.basal_metabolic_rate(g.user.weight,int(g.user.height),g.user.age,g.user.gender)*ACTIVITY_LEVELS[g.user.activity_level]) for row in last_seven_user_food_data]
 
     #### Goal Calories In
     user_goal_calories_in = [calories_out+PLANS[g.user.diet_plan] for calories_out in user_calories_out]
@@ -111,7 +102,7 @@ def homepage():
     last_recorded_bmi_date = user_bmi_dates[-1]
     
     return render_template('home-loggedin.html',user_food_dates=user_food_dates, user_food_calories=user_food_calories, user_bmi_dates=user_bmi_dates, bmis=bmis,weights=weights, bmi_lows_normal=bmi_lows_normal,bmi_highs_normal=bmi_highs_normal, weight_lows_normal=weight_lows_normal,weight_highs_normal=weight_highs_normal,
-    user_calories_out=user_calories_out,user_goal_calories_in=user_goal_calories_in, last_recorded_bmi_date=last_recorded_bmi_date,high_weight_normal=BMI.calculate_normal_high_weight_by_height(height),low_weight_normal=BMI.calculate_normal_low_weight_by_height(height))
+    user_calories_out=user_calories_out,user_goal_calories_in=user_goal_calories_in, last_recorded_bmi_date=last_recorded_bmi_date,high_weight_normal=BMI.calculate_normal_high_weight_by_height(int(g.user.height)),low_weight_normal=BMI.calculate_normal_low_weight_by_height(int(g.user.height)))
 
 
 ###### signup/login/logout
