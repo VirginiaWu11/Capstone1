@@ -93,8 +93,7 @@ def homepage():
     weight_lows_normal = user_bmi_dict["weight_lows_normal"]
     weight_highs_normal = user_bmi_dict["weight_highs_normal"]
 
-    #### calories out
-    user_calories_out = [int(User.basal_metabolic_rate(g.user.weight,int(g.user.height),g.user.age,g.user.gender)*ACTIVITY_LEVELS[g.user.activity_level]) for row in last_seven_user_food_data]
+    user_calories_out = UserFoodService.get_user_calories_out(last_seven_user_food_data, g.user)
 
     #### Goal Calories In
     user_goal_calories_in = [calories_out+PLANS[g.user.diet_plan] for calories_out in user_calories_out]
