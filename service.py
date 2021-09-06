@@ -11,6 +11,7 @@ from constants import (
 from secrets import API_SECRET_KEY
 import requests
 
+
 class UserFoodService:
     @classmethod
     def get_last_seven_user_food_information(cls, user_id):
@@ -54,7 +55,7 @@ class UserFoodService:
     @classmethod
     def get_user_calories_out(cls, last_seven_user_food_data, user):
         #### calories out
-        user_calories_out = [
+        return [
             int(
                 User.basal_metabolic_rate(
                     user.weight, int(user.height), user.age, user.gender
@@ -63,7 +64,6 @@ class UserFoodService:
             )
             for row in last_seven_user_food_data
         ]
-        return user_calories_out
 
     @classmethod
     def get_user_goal_calories_in(cls, user_calories_out, user):
@@ -109,7 +109,7 @@ class UserFoodService:
 
     @classmethod
     def query_recipes_response(cls, search):
-        recipes_resp = requests.get(
+        return requests.get(
             BASE_API_URL + "recipes/complexSearch",
             params={
                 "query": search,
@@ -117,9 +117,7 @@ class UserFoodService:
                 "number": 11,
                 "apiKey": API_SECRET_KEY,
             },
-        )
-        recipes_data = recipes_resp.json()
-        return recipes_data
+        ).json()
 
 
 class UserBMIService:
