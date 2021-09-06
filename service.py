@@ -75,6 +75,15 @@ class UserFoodService:
 
     # food-intake Route
     @classmethod
+    def query_ingredients_resp(cls, search):
+        ingredients_resp = requests.get(
+            BASE_API_URL + "food/ingredients/search",
+            params={"query": search, "number": 1, "apiKey": API_SECRET_KEY},
+        )
+        ingredients_data = ingredients_resp.json()
+        return ingredients_data
+
+    @classmethod
     def format_ingredients_data(cls, food_id, ingredients_data):
         imge = ingredients_data["results"][0]["image"]
         img_url = BASE_INGREDIENTS_IMG_URL + imge
@@ -112,14 +121,6 @@ class UserFoodService:
         recipes_data = recipes_resp.json()
         return recipes_data
 
-    @classmethod
-    def query_ingredients_resp(cls, search):
-        ingredients_resp = requests.get(
-            BASE_API_URL + "food/ingredients/search",
-            params={"query": search, "number": 1, "apiKey": API_SECRET_KEY},
-        )
-        ingredients_data = ingredients_resp.json()
-        return ingredients_data
 
 class UserBMIService:
     @classmethod
