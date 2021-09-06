@@ -82,10 +82,29 @@ class UserServiceTestCase(TestCase):
         db.session.commit()
 
         self.client = app.test_client()
+        # import pdb;pdb.set_trace()
 
     def tearDown(self):
         db.session.rollback()
 
+    # test UserBMIService
+    def test_query_user_bmi_information_and_get_bmi_information(self):
+        self.assertEqual(
+            UserBMIService.get_bmi_information(
+                UserBMIService.query_user_bmi_information(self.u2), self.u2
+            ),
+            {
+                "user_bmi_dates": ["09/06/2021"],
+                "bmis": [33.28],
+                "weights": [200],
+                "bmi_lows_normal": [18.5],
+                "bmi_highs_normal": [24.9],
+                "weight_lows_normal": [111],
+                "weight_highs_normal": [149],
+            },
+        )
+
+    # test UserFoodService
     def test_get_last_seven_user_food_information(self):
 
         self.assertEqual(
@@ -102,23 +121,7 @@ class UserServiceTestCase(TestCase):
                 "user_food_calories": [570],
             },
         )
-
-    def test_query_user_bmi_information_and_get_bmi_information(self):
-        self.assertEqual(
-            UserFoodService.get_bmi_information(
-                UserFoodService.query_user_bmi_information(self.u2), self.u2
-            ),
-            {
-                "user_bmi_dates": ["09/06/2021"],
-                "bmis": [33.28],
-                "weights": [200],
-                "bmi_lows_normal": [18.5],
-                "bmi_highs_normal": [24.9],
-                "weight_lows_normal": [111],
-                "weight_highs_normal": [149],
-            },
-        )
-
+   
     def test_get_user_calories_out(self):
         self.assertEqual(
             UserFoodService.get_user_calories_out([("07/10/2021", 570)], self.u2),
@@ -129,3 +132,4 @@ class UserServiceTestCase(TestCase):
         self.assertEqual(
             UserFoodService.get_user_goal_calories_in([1971], self.u2), [1471]
         )
+
