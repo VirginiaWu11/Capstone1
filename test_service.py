@@ -118,3 +118,14 @@ class UserServiceTestCase(TestCase):
                 "weight_highs_normal": [149],
             },
         )
+
+    def test_get_user_calories_out(self):
+        self.assertEqual(
+            UserFoodService.get_user_calories_out([("07/10/2021", 570)], self.u2),
+            [1971],
+        )
+
+    def test_get_user_goal_calories_in(self):
+        self.assertEqual(
+            UserFoodService.get_user_goal_calories_in([1971], self.u2), [1471]
+        )
