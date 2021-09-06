@@ -3,7 +3,7 @@
 import os
 from unittest import TestCase
 
-from models import db, User
+from models import db, User, BMI
 from app import app, CURR_USER_KEY
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgres:///capstone1test"
@@ -51,15 +51,34 @@ class UserViewTestCase(TestCase):
 
         db.session.add_all([u1, u2])
         db.session.commit()
-
         self.u1 = User.query.get(1)
         self.u2 = User.query.get(2)
+
+        height = BMI.cal_height_inches(self.u2.height)
+        weight = self.u2.weight
+        bmi = BMI.calculate_BMI(height, weight)
+        add_bmi = BMI(bmi=bmi, weight=self.u2.weight, user_id=u2.id)
+        db.session.add_all([add_bmi])
+
+        db.session.commit()
 
         print(self.u2.username, "********************************")
         self.client = app.test_client()
 
     def tearDown(self):
         db.session.rollback()
+
+    def test_user_home_view(self):
+        """When you’re logged in, can you see the home page showing charts and Username?"""
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u2.id
+
+            resp = c.get("/")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("testuser2",str(resp.data))
+            self.assertIn("canvas",str(resp.data))
+            self.assertIn(self.u2.diet_plan,str(resp.data))
             
     def test_users_logged_out_food_intake(self):
         """when logged out, /food-intake should show search bar to search recipes"""
