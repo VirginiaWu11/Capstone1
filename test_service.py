@@ -2,7 +2,6 @@
 
 from models import UserFood, db, BMI, User
 from service import UserBMIService, UserFoodService
-from sqlalchemy.sql import func
 from constants import (
     BMI_LOW_NORMAL,
     BMI_HIGH_NORMAL,
@@ -13,7 +12,6 @@ from constants import (
 )
 from datetime import datetime
 from secrets import API_SECRET_KEY
-import requests
 from unittest import TestCase
 from models import db, User, BMI, UserFood
 from app import app
