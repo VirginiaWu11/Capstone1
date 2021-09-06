@@ -11,7 +11,7 @@ from constants import (
     BASE_API_URL,
     BASE_INGREDIENTS_IMG_URL,
 )
-
+from datetime import datetime
 from secrets import API_SECRET_KEY
 import requests
 from unittest import TestCase
@@ -24,6 +24,7 @@ app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
 db.create_all()
 
 app.config["WTF_CSRF_ENABLED"] = False
+
 
 class UserServiceTestCase(TestCase):
     """Test service for user."""
@@ -76,7 +77,7 @@ class UserServiceTestCase(TestCase):
             calories=570,
             img="https://spoonacular.com/recipeImages/1096010-312x231.jpg",
         )
-        db.session.add_all([add_bmi,user_food1])
+        db.session.add_all([add_bmi, user_food1])
 
         db.session.commit()
 
@@ -87,8 +88,33 @@ class UserServiceTestCase(TestCase):
 
     def test_get_last_seven_user_food_information(self):
 
-        self.assertEqual(UserFoodService.get_last_seven_user_food_information(self.u2.id), [("07/10/2021", 570)])
+        self.assertEqual(
+            UserFoodService.get_last_seven_user_food_information(self.u2.id),
+            [("07/10/2021", 570)],
+        )
 
     def test_get_user_food_dates_and_calories(self):
 
-        self.assertEqual(UserFoodService.get_user_food_dates_and_calories([("07/10/2021", 570)]), {"user_food_dates": ["07/10/2021"], "user_food_calories": [570],})
+        self.assertEqual(
+            UserFoodService.get_user_food_dates_and_calories([("07/10/2021", 570)]),
+            {
+                "user_food_dates": ["07/10/2021"],
+                "user_food_calories": [570],
+            },
+        )
+
+    def test_query_user_bmi_information_and_get_bmi_information(self):
+        self.assertEqual(
+            UserFoodService.get_bmi_information(
+                UserFoodService.query_user_bmi_information(self.u2), self.u2
+            ),
+            {
+                "user_bmi_dates": ["09/06/2021"],
+                "bmis": [33.28],
+                "weights": [200],
+                "bmi_lows_normal": [18.5],
+                "bmi_highs_normal": [24.9],
+                "weight_lows_normal": [111],
+                "weight_highs_normal": [149],
+            },
+        )
