@@ -1,15 +1,12 @@
 """User View tests."""
 
-import os
 from unittest import TestCase
 
-from models import db, User, BMI
+from models import db, User, BMI, UserFood
 from app import app, CURR_USER_KEY
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgres:///capstone1test"
 app.config["DEBUG_TB_INTERCEPT_REDIRECTS"] = False
-
-
 
 db.create_all()
 
@@ -58,11 +55,18 @@ class UserViewTestCase(TestCase):
         weight = self.u2.weight
         bmi = BMI.calculate_BMI(height, weight)
         add_bmi = BMI(bmi=bmi, weight=self.u2.weight, user_id=u2.id)
-        db.session.add_all([add_bmi])
+
+        user_food1 = UserFood(
+            spoon_id=1096010,
+            user_id=2,
+            name="Egg Salad Wrap",
+            calories=570,
+            img="https://spoonacular.com/recipeImages/1096010-312x231.jpg",
+        )
+        db.session.add_all([add_bmi,user_food1])
 
         db.session.commit()
 
-        print(self.u2.username, "********************************")
         self.client = app.test_client()
 
     def tearDown(self):
@@ -88,9 +92,19 @@ class UserViewTestCase(TestCase):
             self.assertIn("Search recipes here.",str(resp.data))
 
     def test_users_logged_out_food_journal(self):
-        """when logged out, /food-journal should redirect to logged out home page with flash showing Access unauthorized."""
+        """when logged out, /food-journal should redirect to logged out home page."""
         with self.client as c:
             resp = c.get("/food-journal")
             self.assertEqual(resp.status_code, 302)
+
+    def test_users_logged_in_food_journal(self):
+        """when logged in, /food-journal should show the user their last logged foods"""
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u2.id
+
+            resp = c.get("/food-journal")
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Egg Salad Wrap",str(resp.data))
 
 
