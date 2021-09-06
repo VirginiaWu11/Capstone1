@@ -1,32 +1,25 @@
 import os
 import requests
-import json
 
 from service import UserFoodService, UserBMIService
 
 from datetime import datetime, timedelta
 from functools import wraps
 
-from sqlalchemy.sql import func
-
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.sql.functions import user
 
 from models import UserFood, db, connect_db, User, BMI
 from constants import (
     PLANS,
     ACTIVITY_LEVELS,
-    BMI_LOW_NORMAL,
-    BMI_HIGH_NORMAL,
     BASE_API_URL,
 )
 
 from forms import (
     FoodIntakeForm,
     UserAddForm,
-    UserEditForm,
     LoginForm,
     BMIForm,
     PlanForm,
