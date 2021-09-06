@@ -101,11 +101,11 @@ def homepage():
     user_food_dates = user_food_dates_and_calories["user_food_dates"]
     user_food_calories = user_food_dates_and_calories["user_food_calories"]
 
-    date_bmi_weight_entries_ascending = UserFoodService.query_user_bmi_information(
+    date_bmi_weight_entries_ascending = UserBMIService.query_user_bmi_information(
         g.user
     )
 
-    user_bmi_dict = UserFoodService.get_bmi_information(
+    user_bmi_dict = UserBMIService.get_bmi_information(
         date_bmi_weight_entries_ascending, g.user
     )
     user_bmi_dates = user_bmi_dict["user_bmi_dates"]
@@ -338,7 +338,7 @@ def search_food():
 
     search = form.search.data
 
-    ingredients_data = UserBMIService.query_ingredients_resp(search)
+    ingredients_data = UserFoodService.query_ingredients_resp(search)
 
     try:
         food_id = ingredients_data["results"][0]["id"]
