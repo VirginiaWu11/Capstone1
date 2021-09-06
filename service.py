@@ -6,7 +6,7 @@ from constants import (
     ACTIVITY_LEVELS,
     PLANS,
     BASE_API_URL,
-    BASE_INGREDIENTS_IMG_URL
+    BASE_INGREDIENTS_IMG_URL,
 )
 from secrets import API_SECRET_KEY
 import requests
