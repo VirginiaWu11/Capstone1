@@ -579,3 +579,191 @@ class UserServiceTestCase(TestCase):
                 "totalResults": 14,
             },
         )
+
+    def test_query_recipes_response(self):
+        self.assertEqual(
+            UserFoodService.query_recipes_response("banana"),
+            {
+                "results": [
+                    {
+                        "id": 634006,
+                        "title": "Banana Bread",
+                        "image": "https://spoonacular.com/recipeImages/634006-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 578.932,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 634183,
+                        "title": "Banana Spheres",
+                        "image": "https://spoonacular.com/recipeImages/634183-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 204.234,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 634021,
+                        "title": "Banana Butter Pie",
+                        "image": "https://spoonacular.com/recipeImages/634021-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 837.301,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 634165,
+                        "title": "Banana Prawn Rolls",
+                        "image": "https://spoonacular.com/recipeImages/634165-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 301.34,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 633975,
+                        "title": "Banana Almond Cake",
+                        "image": "https://spoonacular.com/recipeImages/633975-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 247.237,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 634202,
+                        "title": "Banana Walnut Cake",
+                        "image": "https://spoonacular.com/recipeImages/634202-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 155.192,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 634171,
+                        "title": "Banana Pudding Cake",
+                        "image": "https://spoonacular.com/recipeImages/634171-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 522.033,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 634070,
+                        "title": "Banana Creme Brulee",
+                        "image": "https://spoonacular.com/recipeImages/634070-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 292.395,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 634188,
+                        "title": "Banana Split Parfait",
+                        "image": "https://spoonacular.com/recipeImages/634188-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 940.99,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 634189,
+                        "title": "Banana Split Pudding",
+                        "image": "https://spoonacular.com/recipeImages/634189-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 700.29,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "id": 633970,
+                        "title": "Banana & Oreo Muffin",
+                        "image": "https://spoonacular.com/recipeImages/633970-312x231.jpg",
+                        "imageType": "jpg",
+                        "nutrition": {
+                            "nutrients": [
+                                {
+                                    "title": "Calories",
+                                    "name": "Calories",
+                                    "amount": 535.324,
+                                    "unit": "kcal",
+                                }
+                            ]
+                        },
+                    },
+                ],
+                "offset": 0,
+                "number": 11,
+                "totalResults": 146,
+            },
+        )
