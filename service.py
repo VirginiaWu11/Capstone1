@@ -11,7 +11,6 @@ from constants import (
 from secrets import API_SECRET_KEY
 import requests
 
-
 class UserFoodService:
     @classmethod
     def get_last_seven_user_food_information(cls, user_id):
@@ -51,9 +50,6 @@ class UserFoodService:
             "user_food_calories": user_food_calories,
         }
         # dict(user_food_dates=user_food_dates,user_food_calories=user_food_calories)
-
-    
-
 
     @classmethod
     def get_user_calories_out(cls, last_seven_user_food_data, user):
