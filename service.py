@@ -6,9 +6,9 @@ from constants import (
     ACTIVITY_LEVELS,
     PLANS,
     BASE_API_URL,
+    BASE_INGREDIENTS_IMG_URL
 )
 from secrets import API_SECRET_KEY
-import json
 import requests
 
 
@@ -128,7 +128,7 @@ class UserFoodService:
     @classmethod
     def format_ingredients_data(cls, food_id, ingredients_data):
         imge = ingredients_data["results"][0]["image"]
-        img_url = "https://spoonacular.com/cdn/ingredients_100x100/" + imge
+        img_url = BASE_INGREDIENTS_IMG_URL + imge
 
         ingredients_data["results"][0]["image"] = img_url
         ingredients_data["results"][0]["title"] = ingredients_data["results"][0]["name"]

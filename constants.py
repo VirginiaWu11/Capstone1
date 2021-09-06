@@ -33,3 +33,5 @@ CATEGORIES = [
 ]
 
 BASE_API_URL = "https://api.spoonacular.com/"
+
+BASE_INGREDIENTS_IMG_URL = "https://spoonacular.com/cdn/ingredients_100x100/"
