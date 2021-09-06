@@ -86,4 +86,9 @@ class UserServiceTestCase(TestCase):
         db.session.rollback()
 
     def test_get_last_seven_user_food_information(self):
-        self.assertEqual(UserFoodService.get_last_seven_user_food_information(self.u2.id), [( "07/10/2021", 570)])
+
+        self.assertEqual(UserFoodService.get_last_seven_user_food_information(self.u2.id), [("07/10/2021", 570)])
+
+    def test_get_user_food_dates_and_calories(self):
+
+        self.assertEqual(UserFoodService.get_user_food_dates_and_calories([("07/10/2021", 570)]), {"user_food_dates": ["07/10/2021"], "user_food_calories": [570],})
